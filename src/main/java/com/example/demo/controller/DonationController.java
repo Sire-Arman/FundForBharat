@@ -23,7 +23,7 @@ public class DonationController {
     public ResponseEntity<List<DonationSessionDTO>> getAllDonations() {
         try {
             List<DonationSessionDTO> allDonations = donationService.getAllDonations();
-
+            System.out.println(allDonations.size()+"size");
             if (allDonations == null) {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(allDonations);
             }

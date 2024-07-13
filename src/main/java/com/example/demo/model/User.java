@@ -19,8 +19,14 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    @Column
     private String fullName;
 
+    @Column
+    private String address;
+
+    @Column
+    private Long Doc_id;
 //    @Column()
 //
 //    TODO
@@ -64,6 +70,25 @@ public class User {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    public Long getDoc_id() {
+        return Doc_id;
+    }
+    public void setDoc_id(Long doc_id) { Doc_id = doc_id; }
+
+    public String getAddress() {
+        return address;
+    }
+    public void setAddress(String address) { this.address = address; }
+
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+
 
     public String getFullName() {
         return fullName;
