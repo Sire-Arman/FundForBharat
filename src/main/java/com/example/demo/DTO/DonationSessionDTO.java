@@ -10,6 +10,8 @@ public class DonationSessionDTO {
     private Double amount;
     private LocalDate DonationDate;
     private String errorMessage;
+//   add custom messages or remarks
+//    two donate buttons : one for specific campaigns and one for generic purpose
     public DonationSessionDTO() {};
     public DonationSessionDTO(Long id, Long UserId, Long CampaignId, Double amount, LocalDate DonationDate, String errorMessage) {
         this.id = id;

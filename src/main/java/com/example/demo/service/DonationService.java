@@ -6,8 +6,8 @@ import com.example.demo.repository.DonationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+
 import org.springframework.transaction.annotation.Transactional;
 
 
@@ -58,6 +58,16 @@ public class DonationService {
 
 //        return donationRepository.findAllDonations();
     }
+    public List<Donation> getDonationsByCampaignId(Long campaignId){
+        try{
+            return donationRepository.findDonationsByCampaignId(campaignId);
+        }
+        catch (Exception e){
+            System.err.println("Error fetching donations: " + e.getMessage());
+            return null;
+        }
+    }
+
     public DonationSessionDTO createDonation(  DonationRepository donationRepository){
         DonationSessionDTO donationSessionDTO = new DonationSessionDTO();
         System.out.println(donationRepository);

@@ -15,4 +15,7 @@ public interface DonationRepository extends JpaRepository<Donation , Long>  {
 
     @Query("Select u from Donation u")
     List<Donation> findAllDonations();
+
+    @Query("Select u from Donation u where u.campaign_id = :CampaignId")
+    List<Donation> findDonationsByCampaignId(Long CampaignId);
 }

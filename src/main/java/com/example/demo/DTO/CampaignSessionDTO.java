@@ -1,10 +1,18 @@
 package com.example.demo.DTO;
 
+import com.example.demo.repository.CampaignRepository;
+
+import java.time.LocalDate;
+
 public class CampaignSessionDTO {
     private Long id;
     private Long userId;
     private String title;
     private String description;
+    private LocalDate startDate;
+    private LocalDate endDate;
+//    private Boolean ToBoShown;
+    private Double target_amount;
     private String errorMessage;
 
     public CampaignSessionDTO() {};
@@ -14,6 +22,15 @@ public class CampaignSessionDTO {
         this.title = title;
         this.description = description;
         this.errorMessage = errorMessage;
+    }
+    public CampaignSessionDTO(Long id, Long userId, String title, String description, LocalDate startDate, LocalDate endDate, Double target_amount) {
+        this.id = id;
+        this.userId = userId;
+        this.title = title;
+        this.description = description;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.target_amount = target_amount;
     }
     public CampaignSessionDTO(Long userId, String title, String description) {
         this.userId = userId;
@@ -53,6 +70,24 @@ public class CampaignSessionDTO {
     }
     public void setDescription(String description) {
         this.description = description;
+    }
+    public LocalDate getStartDate() {
+        return startDate;
+    }
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
+    }
+    public LocalDate getEndDate() {
+        return endDate;
+    }
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
+    }
+    public Double getTarget_amount() {
+        return target_amount;
+    }
+    public void setTarget_amount(Double target_amount) {
+        this.target_amount = target_amount;
     }
     public String getErrorMessage() {
         return errorMessage;

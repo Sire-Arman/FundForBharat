@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.DTO.DonationSessionDTO;
 import com.example.demo.DTO.UserSessionDTO;
+import com.example.demo.model.Donation;
 import com.example.demo.repository.DonationRepository;
 import com.example.demo.service.DonationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ public class DonationController {
     public DonationController (DonationService donationService) {
         this.donationService = donationService;
     }
+//    add donations
     @GetMapping("/get-all-donations")
     public ResponseEntity<List<DonationSessionDTO>> getAllDonations() {
         try {
@@ -38,7 +40,7 @@ public class DonationController {
         try {
             DonationSessionDTO donationSessionDTO = donationService.getDonationsByUserId(donation.getUserId());
             if(donationSessionDTO == null){
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(donationSessionDTO);
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
             }
             else{
                 return ResponseEntity.ok(donationSessionDTO);
@@ -47,4 +49,20 @@ public class DonationController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+//    get donations by campaign id
+    @PostMapping("/get-donations-by-campaignId")
+    public ResponseEntity<List<Donation>> getDonationByCampaignId(@RequestBody Long CampaignId){
+        try{
+            List<Donation> DonationsByCampaignId = donationService.getDonationsByCampaignId(CampaignId);
+            if(DonationsByCampaignId == null){
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
+            }
+            return ResponseEntity.ok(DonationsByCampaignId);
+        }
+        catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+//    Add donation
+//    @PostMapping("/")
 }

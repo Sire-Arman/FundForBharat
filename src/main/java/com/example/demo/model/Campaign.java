@@ -23,9 +23,13 @@ public class Campaign {
     @Column(nullable = false)
     private Double target_amount;
 
+    @Column ()
+    private Boolean ToBeShown = false;
+//    tobeshown at home page
     @Column()
     private Double amount_raised;
 //    call
+
 
     private LocalDate start_date;
     private LocalDate end_date;
@@ -71,6 +75,12 @@ public class Campaign {
     public void setAmount_raised(Double amount_raised) {
         this.amount_raised = amount_raised;
     }
+
+    public Boolean getToBeShown() {
+        return ToBeShown;
+    }
+    public void setToBeShown(Boolean toBeShown) { this.ToBeShown = toBeShown; }
+
     public LocalDate getStart_date() {
         return start_date;
     }

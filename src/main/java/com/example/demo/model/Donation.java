@@ -30,6 +30,10 @@ public class Donation {
     @Column(nullable = false)
     private LocalDate donation_date;
 
+//    @ManyToOne
+//    @JoinColumn(name = "campaign_id")
+//    @JsonIgnore
+//    private Campaign campaign;
 
 
 
