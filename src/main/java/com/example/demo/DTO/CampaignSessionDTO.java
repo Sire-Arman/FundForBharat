@@ -1,33 +1,38 @@
 package com.example.demo.DTO;
 
 import com.example.demo.repository.CampaignRepository;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.time.LocalDate;
 
 public class CampaignSessionDTO {
+    @JsonIgnore
     private Long id;
+
+
     private Long userId;
     private String title;
     private String description;
     private LocalDate startDate;
     private LocalDate endDate;
-//    private Boolean ToBoShown;
+    private Boolean toBeShown;
     private Double target_amount;
     private String errorMessage;
 
     public CampaignSessionDTO() {};
 
-    public CampaignSessionDTO(Long userId, String title, String description, String errorMessage) {
-        this.userId = userId;
-        this.title = title;
-        this.description = description;
-        this.errorMessage = errorMessage;
-    }
-    public CampaignSessionDTO(Long id, Long userId, String title, String description, LocalDate startDate, LocalDate endDate, Double target_amount) {
+//    public CampaignSessionDTO(Long userId, String title, String description, String errorMessage) {
+//        this.userId = userId;
+//        this.title = title;
+//        this.description = description;
+//        this.errorMessage = errorMessage;
+//    }
+    public CampaignSessionDTO(Long id, Long userId, String title, String description,Boolean toBeShown, LocalDate startDate, LocalDate endDate, Double target_amount) {
         this.id = id;
         this.userId = userId;
         this.title = title;
         this.description = description;
+        this.toBeShown = toBeShown;
         this.startDate = startDate;
         this.endDate = endDate;
         this.target_amount = target_amount;
@@ -83,6 +88,12 @@ public class CampaignSessionDTO {
     public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
     }
+
+    public Boolean getToBeShown() {
+        return toBeShown;
+    }
+    public void setToBeShown(Boolean toBeShown) { this.toBeShown = toBeShown; }
+
     public Double getTarget_amount() {
         return target_amount;
     }

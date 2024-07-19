@@ -1,12 +1,10 @@
 package com.example.demo.service;
 import com.example.demo.DTO.CampaignSessionDTO;
 import com.example.demo.model.Campaign;
-import com.example.demo.controller.CampaignController;
 import com.example.demo.repository.CampaignRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.Map;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -20,10 +18,10 @@ public class CampaignService {
     }
     public Campaign createCampaign(CampaignSessionDTO campaignDTO) {
         Campaign campaign = new Campaign();
-        Long id = campaignDTO.getId();
         Long userId = campaignDTO.getUserId();
         String title = campaignDTO.getTitle();
         String description = campaignDTO.getDescription();
+        Boolean toBeShown = campaignDTO.getToBeShown();
         Double target_amount = campaignDTO.getTarget_amount();
         LocalDate startDate = campaignDTO.getStartDate();
         LocalDate endDate = campaignDTO.getEndDate();
@@ -31,12 +29,13 @@ public class CampaignService {
 
 
 //        campaign.setId(id);
+        campaign.setUser_id(userId);
         campaign.setTitle(title);
         campaign.setDescription(description);
         campaign.setTarget_amount(target_amount);
+        campaign.setToBeShown(toBeShown);
         campaign.setStart_date(startDate);
         campaign.setEnd_date(endDate);
-        campaign.setUser_id(userId);
 
          return campaignRepository.save(campaign);
 //return campaignRepository.addCam
@@ -52,10 +51,12 @@ public class CampaignService {
         Campaign campaign = campaignRepository.findCampaignById(id);
         campaign.setDescription(updates.get("description").toString());
         campaign.setTitle(updates.get("title").toString());
+        campaign.setToBeShown(Boolean.valueOf(updates.get("toBeShown").toString()));
         campaign.setTarget_amount(Double.valueOf(updates.get("target_amount").toString()));
         campaign.setStart_date(LocalDate.parse(updates.get("start_date").toString()));
         campaign.setEnd_date(LocalDate.parse(updates.get("end_date").toString()));
         campaign.setUser_id(Long.valueOf(updates.get("user_id").toString()));
+
         return campaignRepository.save(campaign);
     }
     public Campaign updateCampaign(Long id, CampaignSessionDTO campaignDTO) {
@@ -68,18 +69,23 @@ public class CampaignService {
         campaign.setUser_id(campaignDTO.getUserId());
         return campaignRepository.save(campaign);
     }
-    public Campaign deleteCampaign(Long id) {
+    public void deleteCampaign(Long id) {
         Campaign campaign = getCampaignById(id);
         campaignRepository.delete(campaign);
-        return campaign;
     }
     public List<Campaign> getAllCampaigns() {
 //        CampaignSessionDTO campaignSessionDTO = new CampaignSessionDTO();
-        List<Campaign> Allcampaigns = campaignRepository.findAllCampaigns();
-        return Allcampaigns;
+        return campaignRepository.findAllCampaigns();
     }
+//    public List<Campaign> getAllWithDonations(){
+//        return campaignRepository.findAllWithDonations();
+//    }
     public List<Campaign> getTopFundedCampaigns(){
         return campaignRepository.findTop10ByOrderByAmountRaisedDesc();
+    }
+
+    public List<Campaign> getHomePageCampaigns(){
+        return campaignRepository.findHomePageCampaigns();
     }
 
 }

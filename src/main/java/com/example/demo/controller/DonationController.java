@@ -4,6 +4,7 @@ import com.example.demo.DTO.DonationSessionDTO;
 import com.example.demo.DTO.UserSessionDTO;
 import com.example.demo.model.Donation;
 import com.example.demo.repository.DonationRepository;
+import com.example.demo.service.DocumentService;
 import com.example.demo.service.DonationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,9 +17,11 @@ import java.util.List;
 @RequestMapping("/api/donations")
 public class DonationController {
     private final DonationService donationService;
+    private final DocumentService documentService;
 
-    public DonationController (DonationService donationService) {
+    public DonationController (DonationService donationService, DocumentService documentService) {
         this.donationService = donationService;
+        this.documentService = documentService;
     }
 //    add donations
     @GetMapping("/get-all-donations")
@@ -65,4 +68,13 @@ public class DonationController {
     }
 //    Add donation
 //    @PostMapping("/")
+    @PostMapping("/add-donation")
+    public void addDonation(@RequestBody DonationSessionDTO dto){
+        try {
+            donationService.createDonation(dto);
+        }catch (Exception e){
+            System.out.println(e);
+        }
+    }
+
 }

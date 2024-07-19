@@ -1,8 +1,11 @@
 package com.example.demo.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.time.LocalDate;
+import java.util.List;
+import java.util.ArrayList;
 
 
 @Entity
@@ -36,6 +39,29 @@ public class Campaign {
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+
+
+
+
+//    testing
+//    @OneToMany(mappedBy = "campaign", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<Document> documents = new ArrayList<>();
+//
+//    @OneToMany(mappedBy = "campaign", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<Donation> donations = new ArrayList<>();
+//@OneToMany(mappedBy = "campaign", fetch = FetchType.LAZY)
+//@JsonIgnore
+//private List<Donation> donations;
+
+
+
+
+
+
+
+
+
 
 //    Getters and Setters
 
@@ -105,5 +131,29 @@ public class Campaign {
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
+
+
+    // Helper methods to manage bidirectional relationships
+//    public void addDocument(Document document) {
+//        documents.add(document);
+////        document.setCampaign(this);
+//    }
+//
+//    public void removeDocument(Document document) {
+//        documents.remove(document);
+////        document.setCampaign(null);
+//    }
+//
+//    public void addDonation(Donation donation) {
+//        donations.add(donation);
+////        donation.setCampaign(this);
+//        this.amount_raised += donation.getAmount();
+//    }
+//
+//    public void removeDonation(Donation donation) {
+//        donations.remove(donation);
+////        donation.setCampaign(null);
+//        this.amount_raised -= donation.getAmount();
+//    }
 
 }

@@ -1,6 +1,8 @@
 package com.example.demo.controller;
 
+import com.example.demo.DTO.DocumentSessionDTO;
 import com.example.demo.DTO.UserDocumentSessionDTO;
+import com.example.demo.model.UserDocument;
 import com.example.demo.service.UserDocumentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,7 +21,7 @@ public class UserDocumentController {
     public UserDocumentController(UserDocumentService userDocumentService) {
         this.userDocumentService = userDocumentService;
     }
-    @PostMapping("/get_doc_by_id")
+    @PostMapping("/get-by-Id")
     public ResponseEntity<UserDocumentSessionDTO> getDocById(@RequestBody UserDocumentSessionDTO userDocumentSessionDTO) {
         try{
             Long id = userDocumentSessionDTO.getId();
@@ -30,6 +32,20 @@ public class UserDocumentController {
             return ResponseEntity.status(HttpStatus.OK).body(usdoc);
         }
         catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+    @PostMapping("/get-by-userId")
+    public ResponseEntity<UserDocument> getDocByUserId(@RequestBody Long userId) {
+        try{
+            UserDocument userdoc = userDocumentService.get_doc_by_userId(userId);
+            if(userdoc == null) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
+            }
+            return ResponseEntity.ok(userdoc);
+
+        }
+        catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }

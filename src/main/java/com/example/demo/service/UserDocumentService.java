@@ -37,4 +37,8 @@ public class UserDocumentService {
 
         }
     }
+    public UserDocument get_doc_by_userId(Long userId){
+        return userDocumentRepository.findByUserId(userId);
+    }
+
 }

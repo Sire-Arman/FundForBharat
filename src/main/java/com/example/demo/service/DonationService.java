@@ -23,7 +23,7 @@ public class DonationService {
             List<Donation> donations = donationRepository.findDonationsByUserId(userId);
             if (!donations.isEmpty()) {
                 return new DonationSessionDTO(donations.getFirst().getId(), donations.get(0).getUser_id(),
-                        donations.get(0).getCampaign_id(), donations.get(0).getAmount(), donations.get(0).getDonation_date(), "");
+                        donations.get(0).getCampaign_id(),donations.get(0).getAlias_name(), donations.get(0).getAmount(), donations.get(0).getDonation_date(),donations.get(0).getMode_of_payment(), "");
             } else {
                 return new DonationSessionDTO("No donations found");
             }
@@ -42,7 +42,7 @@ public class DonationService {
             if (!donation.isEmpty()) {
                 for (Donation value : donation) {
                     donationSessions.add(new DonationSessionDTO(value.getId(), value.getUser_id(),
-                            value.getCampaign_id(), value.getAmount(), value.getDonation_date(), ""));
+                            value.getCampaign_id(),value.getAlias_name(), value.getAmount(), value.getDonation_date(),value.getMode_of_payment(), ""));
                 }
                 return donationSessions;
             }
@@ -68,9 +68,18 @@ public class DonationService {
         }
     }
 
-    public DonationSessionDTO createDonation(  DonationRepository donationRepository){
-        DonationSessionDTO donationSessionDTO = new DonationSessionDTO();
-        System.out.println(donationRepository);
-        return donationSessionDTO;
+    public void createDonation(  DonationSessionDTO dto){
+        Donation donation = new Donation();
+//        donation.setId(dto.getId());
+        donation.setUser_id(dto.getUserId());
+        donation.setCampaign_id(dto.getCampaignId());
+        donation.setMode_of_payment(dto.getModeOfPayment());
+        donation.setAlias_name(dto.getAlias_name());
+        donation.setAmount(dto.getAmount());
+        donation.setDonation_date(dto.getDonationDate());
+
+        donationRepository.save(donation);
+
     }
+
 }

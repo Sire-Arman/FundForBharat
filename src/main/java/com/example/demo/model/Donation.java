@@ -1,5 +1,6 @@
 package com.example.demo.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 
@@ -30,10 +31,14 @@ public class Donation {
     @Column(nullable = false)
     private LocalDate donation_date;
 
-//    @ManyToOne
-//    @JoinColumn(name = "campaign_id")
-//    @JsonIgnore
-//    private Campaign campaign;
+//    testing
+//@ManyToOne
+//@JoinColumn(name = "campaign_id")
+//@JsonIgnore
+//private Campaign campaign;
+//@ManyToOne(fetch = FetchType.LAZY)
+//@JoinColumn(name = "campaign_id")
+//private Campaign campaign;
 
 
 

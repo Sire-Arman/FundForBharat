@@ -17,6 +17,7 @@ public class CampaignController {
     public CampaignController(CampaignService campaignServices) {
         this.campaignServices = campaignServices;
     }
+
     @GetMapping("/get-all-campaigns")
     public ResponseEntity<List<Campaign>> getAllCampaigns() {
 //        System.out.println(campaign);
@@ -31,20 +32,43 @@ public class CampaignController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+//    @GetMapping("/get-all-with-donations")
+//    public ResponseEntity<List<Campaign>> getAllWithDonations() {
+//        try {
+//            List<Campaign> campaigns = campaignServices.getAllWithDonations();
+//            return ResponseEntity.ok(campaigns);
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+//        }
+//    }
     //  home page campaigns(handled by super admins)
     @GetMapping("/get-homepage-campaigns")
-    public ResponseEntity<List<Campaign>> getHomeCampaigns() {
+    public ResponseEntity<List<Campaign>> getHomePageCampaigns() {
         try{
-                List<Campaign> top_funded = campaignServices.getTopFundedCampaigns();
-                if(top_funded.isEmpty()) {
-                    return ResponseEntity.status(HttpStatus.CONFLICT).body(top_funded);
+                List<Campaign> homepage_c = campaignServices.getHomePageCampaigns();
+                if(homepage_c.isEmpty()) {
+                    return ResponseEntity.status(HttpStatus.OK).body(homepage_c);
                 }
-                return ResponseEntity.ok(top_funded);
+                return ResponseEntity.ok(homepage_c);
             }
         catch(Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+    @GetMapping("/get-top-funded-campaigns")
+    public ResponseEntity<List<Campaign>> getTopFundedCampaigns() {
+        try{
+            List<Campaign> top_funded = campaignServices.getTopFundedCampaigns();
+            if(top_funded.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(top_funded);
+            }
+            return ResponseEntity.ok(top_funded);
+        }
+        catch(Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
     @PostMapping("/create-campaign")
     public ResponseEntity<Campaign> createCampaign(@RequestBody CampaignSessionDTO campaignDTO) {
         try{

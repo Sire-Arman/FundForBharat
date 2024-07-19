@@ -9,9 +9,6 @@ public class Document {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-//    @Column(nullable = false, unique = true)
-//    private Long user_id;
-
     @Column(nullable =false)
     private String Doc_type;
 
@@ -34,15 +31,21 @@ public class Document {
     @Column
     private String remarks;
 
+//    testing
+//@ManyToOne(fetch = FetchType.LAZY)
+//@JoinColumn(name = "campaign_id")
+//private Campaign campaign;
+
+
 //    Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
-//    public Long getUser_id() { return user_id; }
-//    public void setUser_id(Long user_id) { this.user_id = user_id; }
     public String getDoc_type() { return Doc_type; }
     public void setDoc_type(String Doc_type) { this.Doc_type = Doc_type; }
     public String getDoc_url() { return Doc_url; }
     public void setDoc_url(String Doc_url) { this.Doc_url = Doc_url; }
+    public Long getCampaign_id() { return campaign_id; }
+    public void setCampaign_id(Long campaign_id) { this.campaign_id = campaign_id; }
     public LocalDate getUpload_date() { return upload_date; }
     public void setUpload_date(LocalDate upload_date) { this.upload_date = upload_date; }
     public Long getUpload_user() { return upload_user; }

@@ -22,6 +22,11 @@ public interface CampaignRepository extends JpaRepository<Campaign, Long> {
     @Query("SELECT u from Campaign u where u.id = :Id")
     Campaign findCampaignById(Long Id) ;
 
+    @Query("Select u from Campaign u where u.ToBeShown=true")
+    List<Campaign> findHomePageCampaigns();
+
+//    @Query("SELECT DISTINCT c FROM Campaign c LEFT JOIN FETCH c.donations")
+//    List<Campaign> findAllWithDonations();
 //    @Query("Insert into Campaign () Values () ")
 //    Campaign addCampaign(Campaign campaign);
 }
