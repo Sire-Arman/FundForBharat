@@ -20,25 +20,30 @@ public class Campaign {
     @Column(nullable = false)
     private String title;
 
-    @Column()
+    @Column
     private String description;
 
     @Column(nullable = false)
     private Double target_amount;
 
-    @Column ()
-    private Boolean ToBeShown = false;
-//    tobeshown at home page
-    @Column()
-    private Double amount_raised;
-//    call
+    @Column
+    private Boolean toBeShown = false;
 
+    @Column
+    private Double amount_raised = 0.0;
 
+    @Column
     private LocalDate start_date;
+
+    @Column
     private LocalDate end_date;
 
+    @Column
     private LocalDateTime createdAt;
+
+    @Column
     private LocalDateTime updatedAt;
+
 
 
 
@@ -103,9 +108,9 @@ public class Campaign {
     }
 
     public Boolean getToBeShown() {
-        return ToBeShown;
+        return toBeShown;
     }
-    public void setToBeShown(Boolean toBeShown) { this.ToBeShown = toBeShown; }
+    public void setToBeShown(Boolean toBeShown) { this.toBeShown = toBeShown; }
 
     public LocalDate getStart_date() {
         return start_date;
@@ -133,15 +138,25 @@ public class Campaign {
     }
 
 
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
+
     // Helper methods to manage bidirectional relationships
 //    public void addDocument(Document document) {
 //        documents.add(document);
-////        document.setCampaign(this);
+//        document.setCampaign(this);
 //    }
 //
 //    public void removeDocument(Document document) {
 //        documents.remove(document);
-////        document.setCampaign(null);
+//        document.setCampaign(null);
 //    }
 //
 //    public void addDonation(Donation donation) {

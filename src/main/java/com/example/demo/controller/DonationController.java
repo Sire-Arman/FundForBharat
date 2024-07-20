@@ -6,6 +6,7 @@ import com.example.demo.model.Donation;
 import com.example.demo.repository.DonationRepository;
 import com.example.demo.service.DocumentService;
 import com.example.demo.service.DonationService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,11 +18,9 @@ import java.util.List;
 @RequestMapping("/api/donations")
 public class DonationController {
     private final DonationService donationService;
-    private final DocumentService documentService;
 
     public DonationController (DonationService donationService, DocumentService documentService) {
         this.donationService = donationService;
-        this.documentService = documentService;
     }
 //    add donations
     @GetMapping("/get-all-donations")
@@ -29,8 +28,8 @@ public class DonationController {
         try {
             List<DonationSessionDTO> allDonations = donationService.getAllDonations();
             System.out.println(allDonations.size()+"size");
-            if (allDonations == null) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(allDonations);
+            if (allDonations.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
             }
             return ResponseEntity.ok(allDonations);
         } catch (Exception e) {
@@ -76,5 +75,17 @@ public class DonationController {
             System.out.println(e);
         }
     }
-
+    @PutMapping("/{id}")
+    public ResponseEntity<Donation> updateDonation(@PathVariable Long id, @RequestBody DonationSessionDTO dto) {
+        try {
+            Donation updatedDonation = donationService.updateDonation(id, dto);
+            return ResponseEntity.ok(updatedDonation);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(null);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 }

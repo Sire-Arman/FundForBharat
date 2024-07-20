@@ -38,6 +38,22 @@ public class DocumentService {
         }
 
     }
+    public Document addDocument(DocumentSessionDTO dto){
+        try{
+            Document doc = new Document();
+            doc.setCampaign_id(dto.getCampaign_id());
+            doc.setDoc_type(dto.getDoc_type());
+            doc.setDoc_url(dto.getDoc_url());
+            doc.setUpload_date(dto.getUpload_date());
+            doc.setUpload_user(dto.getUpload_user());
+            doc.setStatus(dto.getStatus());
+            doc.setRemarks(dto.getRemarks());
+            return documentRepository.save(doc);
+        }catch (Exception e){
+            System.err.println("Exception while adding doc: " + e.getMessage());
+            return null;
+        }
+    }
     public Document updateDocument(Long id , DocumentSessionDTO dto){
        try{
            Document dt = documentRepository.findById(id).orElseThrow(()-> new EntityNotFoundException("Document not found with id: " + id));
@@ -58,6 +74,13 @@ public class DocumentService {
            System.err.println("Exception while updating doc: " + e.getMessage());
            return null;
        }
+    }
+    public void deleteDocument(Long id ){
+        try{
+            documentRepository.deleteById(id);
+        }catch (Exception e){
+            System.err.println("Exception while updating doc: " + e.getMessage());
+        }
     }
     public List<Document> get_doc_by_campaignId(Long campaign_id) {
         try{

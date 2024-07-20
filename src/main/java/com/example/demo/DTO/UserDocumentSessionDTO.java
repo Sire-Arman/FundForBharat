@@ -1,7 +1,11 @@
 package com.example.demo.DTO;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class UserDocumentSessionDTO {
+    @JsonIgnore
     private Long id;
+
     private Long userId;
     private String alias_name;
     private String doc_type;

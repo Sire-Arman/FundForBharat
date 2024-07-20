@@ -33,7 +33,7 @@ public class Document {
 
 //    testing
 //@ManyToOne(fetch = FetchType.LAZY)
-//@JoinColumn(name = "campaign_id")
+//@JoinColumn(name = "id")
 //private Campaign campaign;
 
 
@@ -54,4 +54,13 @@ public class Document {
     public void setStatus(String status) { this.status = status; }
     public String getRemarks() { return remarks; }
     public void setRemarks(String remarks) { this.remarks = remarks; }
+
+//    public void setCampaign(Campaign campaign) {
+//        this.campaign = campaign;
+//    }
+//
+//    public Campaign getCampaign() {
+//        return campaign;
+//    }
+
 }

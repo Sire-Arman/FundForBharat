@@ -63,6 +63,32 @@ public class DocumentController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+    @PostMapping("/add-doc")
+    public ResponseEntity<Document> addDoc(@RequestBody DocumentSessionDTO dto) {
+        try {
+            Document dt = documentService.addDocument(dto);
+            if(dt != null) {
+                return ResponseEntity.ok(dt);
+            }
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
+
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Document> deleteDoc(@PathVariable("id") Long id) {
+        try {
+            Document dt = documentService.get_doc_by_Id(id);
+            if(dt != null) {
+                documentService.deleteDocument(id);
+                return ResponseEntity.ok(dt);
+            }
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
     @PutMapping("/update-doc")
     public ResponseEntity<Document> updateDoc(Long id, DocumentSessionDTO dto) {
         try{

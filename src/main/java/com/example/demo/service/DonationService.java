@@ -3,6 +3,7 @@ package com.example.demo.service;
 import com.example.demo.DTO.DonationSessionDTO;
 import com.example.demo.model.Donation;
 import com.example.demo.repository.DonationRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -80,6 +81,19 @@ public class DonationService {
 
         donationRepository.save(donation);
 
+    }
+    public Donation updateDonation(Long id, DonationSessionDTO dto) {
+        return donationRepository.findById(id)
+                .map(donation -> {
+                    donation.setUser_id(dto.getUserId());
+                    donation.setCampaign_id(dto.getCampaignId());
+                    donation.setMode_of_payment(dto.getModeOfPayment());
+                    donation.setAlias_name(dto.getAlias_name());
+                    donation.setAmount(dto.getAmount());
+                    donation.setDonation_date(dto.getDonationDate());
+                    return donationRepository.save(donation);
+                })
+                .orElseThrow(() -> new EntityNotFoundException("Donation not found with id: " + id));
     }
 
 }

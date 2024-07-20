@@ -9,6 +9,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
+//fix the get all campaign with donations endpoint
+//path variable to request param
+//proper collection for postman
+//export to fundraiser grp(Monday)
+//implement jwt asap
+//endpoint transactional annotation
+//user error handling correctly.
+
 @RestController
 @RequestMapping("/api/campaigns")
 public class CampaignController {
@@ -41,6 +49,7 @@ public class CampaignController {
 //            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 //        }
 //    }
+
     //  home page campaigns(handled by super admins)
     @GetMapping("/get-homepage-campaigns")
     public ResponseEntity<List<Campaign>> getHomePageCampaigns() {
@@ -81,24 +90,24 @@ public class CampaignController {
         }
     }
 //
-@GetMapping("/{id}")
-public ResponseEntity<Campaign> getCampaign(@PathVariable Long id) {
-    try {
-        Campaign campaign = campaignServices.getCampaignById(id);
-        return ResponseEntity.ok(campaign);
-    } catch (Exception e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    @GetMapping("/{id}")
+    public ResponseEntity<Campaign> getCampaign(@PathVariable Long id) {
+        try {
+            Campaign campaign = campaignServices.getCampaignById(id);
+            return ResponseEntity.ok(campaign);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
-}
-@PutMapping("/{id}")
-public ResponseEntity<Campaign> updateCampaign(@PathVariable Long id, @RequestBody CampaignSessionDTO campaignDTO) {
-    try {
-        Campaign updatedCampaign = campaignServices.updateCampaign(id, campaignDTO);
-        return ResponseEntity.ok(updatedCampaign);
-    }catch (Exception e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    @PutMapping("/{id}")
+    public ResponseEntity<Campaign> updateCampaign(@PathVariable Long id, @RequestBody CampaignSessionDTO campaignDTO) {
+        try {
+            Campaign updatedCampaign = campaignServices.updateCampaign(id, campaignDTO);
+            return ResponseEntity.ok(updatedCampaign);
+        }catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
-}
 
     @PatchMapping("/{id}")
     public ResponseEntity<Campaign> partialUpdateCampaign(@PathVariable Long id, @RequestBody Map<String, Object> updates) {
