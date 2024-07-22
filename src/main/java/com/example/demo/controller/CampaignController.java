@@ -90,42 +90,80 @@ public class CampaignController {
         }
     }
 //
-    @GetMapping("/{id}")
-    public ResponseEntity<Campaign> getCampaign(@PathVariable Long id) {
+@GetMapping
+public ResponseEntity<?> getCampaign(@RequestParam Long id) {
+    try {
+        Optional<Campaign> campaignOptional = campaignServices.getCampaignById(id);
+
+        if (campaignOptional.isPresent()) {
+            return ResponseEntity.ok(campaignOptional.get());
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Campaign not found with id: " + id);
+        }
+    } catch (IllegalArgumentException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body("Invalid campaign id: " + e.getMessage());
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("An error occurred while fetching the campaign: " + e.getMessage());
+    }
+}
+    @PutMapping
+    public ResponseEntity<?> updateCampaign(@RequestParam Long id, @RequestBody CampaignSessionDTO campaignDTO) {
         try {
-            Campaign campaign = campaignServices.getCampaignById(id);
-            return ResponseEntity.ok(campaign);
+            Optional<Campaign> updatedCampaign = campaignServices.updateCampaign(id, campaignDTO);
+            if (updatedCampaign.isPresent()) {
+                return ResponseEntity.ok(updatedCampaign.get());
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("Campaign not updated with id: " + id);
+            }
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Invalid campaign id: " + e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-    @PutMapping("/{id}")
-    public ResponseEntity<Campaign> updateCampaign(@PathVariable Long id, @RequestBody CampaignSessionDTO campaignDTO) {
-        try {
-            Campaign updatedCampaign = campaignServices.updateCampaign(id, campaignDTO);
-            return ResponseEntity.ok(updatedCampaign);
-        }catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("An error occurred while fetching the campaign: " + e.getMessage());
         }
     }
 
-    @PatchMapping("/{id}")
-    public ResponseEntity<Campaign> partialUpdateCampaign(@PathVariable Long id, @RequestBody Map<String, Object> updates) {
+    @PatchMapping
+    public ResponseEntity<?> partialUpdateCampaign(@RequestParam Long id, @RequestBody Map<String, Object> updates) {
         try {
-            Campaign updatedCampaign = campaignServices.partialUpdateCampaign(id, updates);
-            return ResponseEntity.ok(updatedCampaign);
-        }catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            Optional<Campaign> patchedCampaign = campaignServices.partialUpdateCampaign(id, updates);
+            if (patchedCampaign.isPresent()) {
+                return ResponseEntity.ok("Updated campaign with id "+ id + "\n" +patchedCampaign.get());
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("Campaign not patched with id: " + id);
+            }
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Invalid campaign id: " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("An error occurred while fetching the campaign: " + e.getMessage());
         }
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCampaign(@PathVariable Long id) {
+    @DeleteMapping
+    public ResponseEntity<?> deleteCampaign(@RequestParam Long id) {
         try {
-            campaignServices.deleteCampaign(id);
-            return ResponseEntity.noContent().build();
-        }catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            boolean deleted = campaignServices.deleteCampaign(id);
+            if (deleted) {
+                return ResponseEntity.status(HttpStatus.OK)
+                        .body("Campaign deleted with id: " + id);
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("Campaign not found with id: " + id);
+            }
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Invalid campaign ID: " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("An error occurred while deleting the campaign: " + e.getMessage());
         }
     }
 //

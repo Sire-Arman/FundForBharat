@@ -15,7 +15,7 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
     List<Document> findAll();
 
     @Query("Select u from Document u where u.upload_user = :user_id")
-    Document findbyUserId(Long user_id);
+    Optional<Document> findByUserId(Long user_id);
 
     @Query("select u from Document u where u.campaign_id = :campaignId")
     List<Document> findByCampaignId(Long campaignId);

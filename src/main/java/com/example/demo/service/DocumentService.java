@@ -10,33 +10,30 @@ import org.springframework.stereotype.Service;
 
 import javax.print.Doc;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class DocumentService {
-    @Autowired
-    private final DonationService donationService;
+
     @Autowired
     private DocumentRepository documentRepository;
 
-    public DocumentService(DonationService donationService) { this.donationService = donationService; }
-    public Document get_doc_by_Id(Long id){
-        return documentRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Document not found with id: " + id));
+    public DocumentService(DocumentRepository documentRepository) { this.documentRepository = documentRepository; }
+    public Optional<Document> findById(Long id) {
+        return documentRepository.findById(id);
     }
-    public DocumentSessionDTO get_doc_by_userId(Long user_id) {
-        try{
-            Document dt = documentRepository.findbyUserId(user_id);
-            if(dt == null){
-                return new DocumentSessionDTO("No doc found");
+    public Optional<DocumentSessionDTO> findByUserId(Long user_id) {
+        try {
+            Optional<Document> documentOptional = documentRepository.findByUserId(user_id);
+            if (documentOptional.isEmpty()) {
+                return Optional.of(new DocumentSessionDTO("No doc found"));
             }
-            return new DocumentSessionDTO(dt.getId(),dt.getDoc_type(),dt.getDoc_url(),dt.getUpload_date(),dt.getCampaign_id(),dt.getUpload_user(), dt.getStatus(),dt.getRemarks(),"");
-        }
-        catch(Exception e){
+            Document dt = documentOptional.get();
+            return Optional.of(new DocumentSessionDTO(dt.getId(), dt.getDoc_type(), dt.getDoc_url(), dt.getUpload_date(), dt.getCampaign_id(), dt.getUpload_user(), dt.getStatus(), dt.getRemarks(), ""));
+        } catch (Exception e) {
             System.err.println("Exception while finding doc: " + e.getMessage());
-//            return new DonationSessionDTO("Error logging in");
-            return new DocumentSessionDTO("Some error occured");
+            return Optional.of(new DocumentSessionDTO("Some error occurred"));
         }
-
     }
     public Document addDocument(DocumentSessionDTO dto){
         try{
@@ -75,12 +72,12 @@ public class DocumentService {
            return null;
        }
     }
-    public void deleteDocument(Long id ){
-        try{
-            documentRepository.deleteById(id);
-        }catch (Exception e){
-            System.err.println("Exception while updating doc: " + e.getMessage());
-        }
+    public boolean deleteDocument(Long id) {
+            if(documentRepository.existsById(id)){
+                documentRepository.deleteById(id);
+                return true;
+            }
+            return false;
     }
     public List<Document> get_doc_by_campaignId(Long campaign_id) {
         try{

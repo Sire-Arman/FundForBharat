@@ -9,8 +9,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+//import javax.print.Doc;
 import javax.print.Doc;
 import java.util.List;
+import java.util.Optional;
 
 
 @RestController
@@ -22,40 +24,42 @@ public class DocumentController {
     public DocumentController(DocumentService documentService) {
         this.documentService = documentService;
     }
-    @GetMapping("/get-by-Id")
-    public ResponseEntity<Document> getById(@RequestParam("id") Long id) {
-        try{
-            Document dt = documentService.get_doc_by_Id(id);
-            if(dt != null) {
-                return ResponseEntity.ok(dt);
+    @GetMapping
+    public ResponseEntity<?> getById(@RequestParam Long id) {
+        try {
+            Optional<Document> documentOptional = documentService.findById(id);
+            if(documentOptional.isPresent()) {
+                Document document = documentOptional.get();
+                return ResponseEntity.status(HttpStatus.OK).body(document);
             }
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
-        }
-        catch(Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return ResponseEntity.ok("No document found with id " + id);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body("Invalid document ID: " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("An error occurred while fetching the document: " + e.getMessage());
         }
     }
-    @PostMapping("/get-by-userId")
-    public ResponseEntity<DocumentSessionDTO> getDocByUserId(@RequestBody DocumentSessionDTO dto) {
-        try{
-            Long user_id = dto.getUpload_user();
-            DocumentSessionDTO documentSessionDTO = documentService.get_doc_by_userId(user_id);
-            if(documentSessionDTO == null) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
+    @GetMapping("/get-by-userId")
+    public ResponseEntity<?> getByUserId(@RequestParam Long userId) {
+        try {
+            Optional<DocumentSessionDTO> documentSessionDTO = documentService.findByUserId(userId);
+            if (documentSessionDTO.isEmpty() || documentSessionDTO.get().getErrorMessage() != null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No document found for the given user ID");
             }
-            return ResponseEntity.ok(documentSessionDTO);
+            return ResponseEntity.ok(documentSessionDTO.get());
+        } catch (Exception e) {
+            System.err.println("Exception while getting document: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while retrieving the document");
+        }
+    }
 
-        }
-        catch (Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-    @PostMapping("/get-by-campaignId")
-    public ResponseEntity<List<Document>> getDocByCampaignId(@RequestBody Long CampaignId){
+    @GetMapping("/get-by-campaignId")
+    public ResponseEntity<?> getDocByCampaignId(@RequestParam Long CampaignId){
         try{
             List<Document> documents = documentService.get_doc_by_campaignId(CampaignId);
-            if(documents == null) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
+            if(documents.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("No documents found for Campaign id : "+ CampaignId);
             }
             return ResponseEntity.ok(documents);
 
@@ -76,21 +80,31 @@ public class DocumentController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Document> deleteDoc(@PathVariable("id") Long id) {
+    @DeleteMapping
+    public ResponseEntity<?> deleteDoc(@RequestParam Long id) {
         try {
-            Document dt = documentService.get_doc_by_Id(id);
-            if(dt != null) {
-                documentService.deleteDocument(id);
-                return ResponseEntity.ok(dt);
+            Optional<Document> documentOptional = documentService.findById(id);
+            if (documentOptional.isPresent()) {
+                Document document = documentOptional.get();
+                boolean deleted = documentService.deleteDocument(id);
+                if (deleted) {
+                    return ResponseEntity.ok(document);
+                } else {
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                            .body("Failed to delete document with id: " + id);
+                }
+            } else {
+                return ResponseEntity.notFound().build();
             }
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
-        }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body("Invalid document ID: " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("An error occurred while deleting the document: " + e.getMessage());
         }
     }
-    @PutMapping("/update-doc")
-    public ResponseEntity<Document> updateDoc(Long id, DocumentSessionDTO dto) {
+    @PutMapping
+    public ResponseEntity<?> updateDoc(@RequestParam Long id,@RequestBody DocumentSessionDTO dto) {
         try{
 
             Document dt = documentService.updateDocument(id,dto);

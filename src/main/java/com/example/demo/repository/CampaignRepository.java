@@ -2,6 +2,7 @@ package com.example.demo.repository;
 
 import com.example.demo.DTO.CampaignSessionDTO;
 import com.example.demo.model.Campaign;
+import com.example.demo.model.Donation;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface CampaignRepository extends JpaRepository<Campaign, Long> {
@@ -20,7 +22,8 @@ public interface CampaignRepository extends JpaRepository<Campaign, Long> {
 
 
     @Query("SELECT u from Campaign u where u.id = :Id")
-    Campaign findCampaignById(Long Id) ;
+    Optional<Campaign> findCampaignById(Long Id) ;
+
 
     @Query("Select u from Campaign u where u.toBeShown=true")
     List<Campaign> findHomePageCampaigns();
