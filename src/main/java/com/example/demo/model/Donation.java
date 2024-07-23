@@ -32,6 +32,9 @@ public class Donation {
     private LocalDate donation_date;
 
 //    testing
+@ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = "campaign_id", insertable = false, updatable = false)
+private Campaign campaign;
 //@ManyToOne
 //@JoinColumn(name = "campaign_id")
 //@JsonIgnore

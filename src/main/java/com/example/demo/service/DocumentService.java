@@ -9,7 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.print.Doc;
-import java.util.List;
+import java.time.LocalDate;
+import java.util.*;
 import java.util.Optional;
 
 @Service
@@ -19,6 +20,10 @@ public class DocumentService {
     private DocumentRepository documentRepository;
 
     public DocumentService(DocumentRepository documentRepository) { this.documentRepository = documentRepository; }
+    public Optional<List<Document>> findAll() {
+        List<Document> documents = documentRepository.findAll();
+        return Optional.ofNullable(documents);
+    }
     public Optional<Document> findById(Long id) {
         return documentRepository.findById(id);
     }
@@ -71,6 +76,38 @@ public class DocumentService {
            System.err.println("Exception while updating doc: " + e.getMessage());
            return null;
        }
+    }
+    public Optional<Document> partialUpdateDocument(Long id, Map<String, Object> updates) {
+        Optional<Document> documentOpt = documentRepository.findById(id);
+        if (documentOpt.isPresent()) {
+            Document document = documentOpt.get();
+
+            if (updates.containsKey("Doc_type")) {
+                document.setDoc_type((String) updates.get("Doc_type"));
+            }
+            if (updates.containsKey("Doc_url")) {
+                document.setDoc_url((String) updates.get("Doc_url"));
+            }
+            if (updates.containsKey("campaign_id")) {
+                document.setCampaign_id(Long.valueOf(updates.get("campaign_id").toString()));
+            }
+            if (updates.containsKey("upload_date")) {
+                document.setUpload_date(LocalDate.parse(updates.get("upload_date").toString()));
+            }
+            if (updates.containsKey("upload_user")) {
+                document.setUpload_user(Long.valueOf(updates.get("upload_user").toString()));
+            }
+            if (updates.containsKey("status")) {
+                document.setStatus(updates.get("status").toString());
+            }
+            if (updates.containsKey("remarks")) {
+                document.setRemarks(updates.get("isPublic").toString());
+            }
+
+            return Optional.of(documentRepository.save(document));
+        } else {
+            return Optional.empty();
+        }
     }
     public boolean deleteDocument(Long id) {
             if(documentRepository.existsById(id)){

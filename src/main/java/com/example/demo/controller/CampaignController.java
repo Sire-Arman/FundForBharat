@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.DTO.CampaignSessionDTO;
+import com.example.demo.DTO.CampaignWithDonationsDTO;
 import com.example.demo.model.Campaign;
 import com.example.demo.service.CampaignService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,13 +10,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
-//fix the get all campaign with donations endpoint
-//path variable to request param
-//proper collection for postman
-//export to fundraiser grp(Monday)
-//implement jwt asap
-//endpoint transactional annotation
-//user error handling correctly.
+//fix the get all campaign with donations endpoint-done
+//path variable to request param-done
+//proper collection for postman-done
+//export to fundraiser grp(Monday) - pending
+//implement jwt asap-pending
+//endpoint transactional annotation-done
+//user error handling correctly.-done
 
 @RestController
 @RequestMapping("/api/campaigns")
@@ -26,7 +27,7 @@ public class CampaignController {
         this.campaignServices = campaignServices;
     }
 
-    @GetMapping("/get-all-campaigns")
+    @GetMapping("/get-all")
     public ResponseEntity<List<Campaign>> getAllCampaigns() {
 //        System.out.println(campaign);
 
@@ -39,6 +40,11 @@ public class CampaignController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+    @GetMapping("/get-all-with-donations")
+    public ResponseEntity<List<CampaignWithDonationsDTO>> getAllCampaignsWithDonations() {
+        List<CampaignWithDonationsDTO> campaigns = campaignServices.getAllCampaignsWithDonations();
+        return ResponseEntity.ok(campaigns);
     }
 //    @GetMapping("/get-all-with-donations")
 //    public ResponseEntity<List<Campaign>> getAllWithDonations() {

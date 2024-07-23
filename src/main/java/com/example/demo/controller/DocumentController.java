@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.DTO.DocumentSessionDTO;
 import com.example.demo.DTO.DonationSessionDTO;
+import com.example.demo.model.Campaign;
 import com.example.demo.model.Document;
 import com.example.demo.service.DocumentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 //import javax.print.Doc;
 import javax.print.Doc;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 
@@ -23,6 +25,20 @@ public class DocumentController {
     @Autowired
     public DocumentController(DocumentService documentService) {
         this.documentService = documentService;
+    }
+    @GetMapping("/get-all")
+    public ResponseEntity<?> getAllDocuments() {
+        try {
+            Optional<List<Document>> optionalDTOs = documentService.findAll();
+            if(optionalDTOs.isPresent() && !optionalDTOs.get().isEmpty()) {
+                return ResponseEntity.status(HttpStatus.OK).body(optionalDTOs.get());
+            }
+            return ResponseEntity.ok("No document found ");
+        }catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("An error occurred while fetching the document: " + e.getMessage());
+        }
+
     }
     @GetMapping
     public ResponseEntity<?> getById(@RequestParam Long id) {
@@ -80,6 +96,39 @@ public class DocumentController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+    @PutMapping
+    public ResponseEntity<?> updateDoc(@RequestParam Long id,@RequestBody DocumentSessionDTO dto) {
+        try{
+
+            Document dt = documentService.updateDocument(id,dto);
+            if(dt != null) {
+                return ResponseEntity.ok(dt);
+            }
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
+
+
+        }
+        catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+    @PatchMapping()
+    public ResponseEntity<?> patchDoc(@RequestParam Long id, @RequestBody Map<String, Object> updates) {
+        try {
+            Optional<Document> patchedDocument = documentService.partialUpdateDocument(id, updates);
+            if (patchedDocument.isPresent()) {
+                return ResponseEntity.ok("Updated Document with id "+ id + "\n" +patchedDocument.get());
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("Document not patched with id: " + id);
+            }
+        }catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body("Invalid document ID: " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("An error occurred while deleting the document: " + e.getMessage());
+        }
+    }
     @DeleteMapping
     public ResponseEntity<?> deleteDoc(@RequestParam Long id) {
         try {
@@ -101,22 +150,6 @@ public class DocumentController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("An error occurred while deleting the document: " + e.getMessage());
-        }
-    }
-    @PutMapping
-    public ResponseEntity<?> updateDoc(@RequestParam Long id,@RequestBody DocumentSessionDTO dto) {
-        try{
-
-            Document dt = documentService.updateDocument(id,dto);
-            if(dt != null) {
-                return ResponseEntity.ok(dt);
-            }
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
-
-
-        }
-        catch (Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 }
