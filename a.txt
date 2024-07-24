@@ -1,5 +1,0 @@
-Backend Tasks done today:
-1: Added Security config files and Auth Controllers from Authenticate 2.0 branch.
-2: Implemented admin roles with @Aman Singh 
-3: Added WebSecurityAdapter .
-4: Resolved all logical errors.
