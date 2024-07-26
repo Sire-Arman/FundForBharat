@@ -1,14 +1,12 @@
 package com.example.demo.service;
 
 import com.example.demo.DTO.DocumentSessionDTO;
-import com.example.demo.DTO.DonationSessionDTO;
 import com.example.demo.model.Document;
 import com.example.demo.repository.DocumentRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import javax.print.Doc;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.Optional;
@@ -18,15 +16,23 @@ public class DocumentService {
 
     @Autowired
     private DocumentRepository documentRepository;
-
     public DocumentService(DocumentRepository documentRepository) { this.documentRepository = documentRepository; }
+
+
+    @Transactional
     public Optional<List<Document>> findAll() {
         List<Document> documents = documentRepository.findAll();
         return Optional.ofNullable(documents);
     }
+
+
+    @Transactional
     public Optional<Document> findById(Long id) {
         return documentRepository.findById(id);
     }
+
+
+    @Transactional
     public Optional<DocumentSessionDTO> findByUserId(Long user_id) {
         try {
             Optional<Document> documentOptional = documentRepository.findByUserId(user_id);
@@ -34,12 +40,15 @@ public class DocumentService {
                 return Optional.of(new DocumentSessionDTO("No doc found"));
             }
             Document dt = documentOptional.get();
-            return Optional.of(new DocumentSessionDTO(dt.getId(), dt.getDoc_type(), dt.getDoc_url(), dt.getUpload_date(), dt.getCampaign_id(), dt.getUpload_user(), dt.getStatus(), dt.getRemarks(), ""));
+            return Optional.of(new DocumentSessionDTO(dt.getId(), dt.getDoc_type(), dt.getDoc_url(),dt.getCampaign_id(),dt.getUpload_date(), dt.getUpload_user(), dt.getStatus(), dt.getRemarks(), ""));
         } catch (Exception e) {
             System.err.println("Exception while finding doc: " + e.getMessage());
             return Optional.of(new DocumentSessionDTO("Some error occurred"));
         }
     }
+
+
+    @Transactional
     public Document addDocument(DocumentSessionDTO dto){
         try{
             Document doc = new Document();
@@ -56,6 +65,9 @@ public class DocumentService {
             return null;
         }
     }
+
+
+    @Transactional
     public Document updateDocument(Long id , DocumentSessionDTO dto){
        try{
            Document dt = documentRepository.findById(id).orElseThrow(()-> new EntityNotFoundException("Document not found with id: " + id));
@@ -77,6 +89,9 @@ public class DocumentService {
            return null;
        }
     }
+
+
+    @Transactional
     public Optional<Document> partialUpdateDocument(Long id, Map<String, Object> updates) {
         Optional<Document> documentOpt = documentRepository.findById(id);
         if (documentOpt.isPresent()) {
@@ -109,6 +124,9 @@ public class DocumentService {
             return Optional.empty();
         }
     }
+
+
+    @Transactional
     public boolean deleteDocument(Long id) {
             if(documentRepository.existsById(id)){
                 documentRepository.deleteById(id);
@@ -116,13 +134,15 @@ public class DocumentService {
             }
             return false;
     }
+
+
+    @Transactional
     public List<Document> get_doc_by_campaignId(Long campaign_id) {
         try{
             return documentRepository.findByCampaignId(campaign_id);
         }
         catch(Exception e){
             System.err.println("Exception while finding doc: " + e.getMessage());
-//            return new DonationSessionDTO("Error logging in");
             return null;
         }
 

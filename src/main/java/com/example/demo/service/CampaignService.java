@@ -5,10 +5,9 @@ import com.example.demo.DTO.DonationSessionDTO;
 import com.example.demo.model.Campaign;
 import com.example.demo.model.Donation;
 import com.example.demo.repository.CampaignRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.HashMap;
 import java.util.Map;
 
 import java.time.LocalDate;
@@ -23,6 +22,16 @@ public class CampaignService {
     public CampaignService(CampaignRepository campaignRepository) {
         this.campaignRepository = campaignRepository;
     }
+
+    /**
+     * this methods takes
+     * sets data
+     * saves data
+     * @param campaignDTO
+     * @return
+     */
+
+    @Transactional
     public Campaign createCampaign(CampaignSessionDTO campaignDTO) {
         Campaign campaign = new Campaign();
         Long userId = campaignDTO.getUserId();
@@ -33,9 +42,6 @@ public class CampaignService {
         LocalDate startDate = campaignDTO.getStartDate();
         LocalDate endDate = campaignDTO.getEndDate();
 
-
-
-//        campaign.setId(id);
         campaign.setUser_id(userId);
         campaign.setTitle(title);
         campaign.setDescription(description);
@@ -45,15 +51,16 @@ public class CampaignService {
         campaign.setEnd_date(endDate);
 
          return campaignRepository.save(campaign);
-//return campaignRepository.addCam
-//        Campaign createdCampaign = campaignRepository.addCampaign(id,userId,title,description,startDate,endDate,target_amount);
-////        Campaign campaign = new Campaign();
-////        campaign.setId(campaignSessionDTO.id);
-//        return createdCampaign;
     }
+
+
+    @Transactional
     public Optional<Campaign> getCampaignById(Long id) {
         return campaignRepository.findCampaignById(id);
     }
+
+
+    @Transactional
     public Optional<Campaign> partialUpdateCampaign(Long id, Map<String, Object> updates) {
         Optional<Campaign> campaignOpt = campaignRepository.findCampaignById(id);
         if (campaignOpt.isPresent()) {
@@ -86,6 +93,9 @@ public class CampaignService {
             return Optional.empty();
         }
     }
+
+
+    @Transactional
     public Optional<Campaign> updateCampaign(Long id, CampaignSessionDTO campaignDTO) {
         return campaignRepository.findById(id)
                 .map(campaign -> {
@@ -98,6 +108,9 @@ public class CampaignService {
                     return campaignRepository.save(campaign);
                 });
     }
+
+
+    @Transactional
     public boolean deleteCampaign(Long id) {
         if (campaignRepository.existsById(id)) {
             campaignRepository.deleteById(id);
@@ -105,37 +118,45 @@ public class CampaignService {
         }
         return false;
     }
+
+
+    @Transactional
     public List<Campaign> getAllCampaigns() {
-//        CampaignSessionDTO campaignSessionDTO = new CampaignSessionDTO();
         return campaignRepository.findAllCampaigns();
     }
-//    public List<Campaign> getAllWithDonations(){
-//        return campaignRepository.findAllWithDonations();
-//    }
-public boolean addDonationAmount(Long id, Double amount) {
-    Optional<Campaign> optionalCampaign = campaignRepository.findById(id);
 
-    if (optionalCampaign.isPresent()) {
-        Campaign campaign = optionalCampaign.get();
-        Double currentAmount = campaign.getAmount_raised();
-        Double newAmount = currentAmount + amount;
 
-        campaign.setAmount_raised(newAmount);
-        campaignRepository.save(campaign);
-        return true;  // Operation successful
-    } else {
-        System.err.println("Campaign with id " + id + " not found");
-        return false;  // Operation failed
+    @Transactional
+    public boolean addDonationAmount(Long id, Double amount) {
+        Optional<Campaign> optionalCampaign = campaignRepository.findById(id);
+
+        if (optionalCampaign.isPresent()) {
+            Campaign campaign = optionalCampaign.get();
+            Double currentAmount = campaign.getAmount_raised();
+            Double newAmount = currentAmount + amount;
+
+            campaign.setAmount_raised(newAmount);
+            campaignRepository.save(campaign);
+            return true;  // Operation successful
+        } else {
+            System.err.println("Campaign with id " + id + " not found");
+            return false;  // Operation failed
+        }
     }
-}
+
+
+    @Transactional
     public List<Campaign> getTopFundedCampaigns(){
         return campaignRepository.findTop10ByOrderByAmountRaisedDesc();
     }
 
+
+    @Transactional
     public List<Campaign> getHomePageCampaigns(){
         return campaignRepository.findHomePageCampaigns();
     }
 
+    @Transactional
     public List<CampaignWithDonationsDTO> getAllCampaignsWithDonations() {
         List<Campaign> campaigns = campaignRepository.findAllWithDonations();
         return campaigns.stream()

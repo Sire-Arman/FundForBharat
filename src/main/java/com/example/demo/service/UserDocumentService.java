@@ -2,7 +2,6 @@ package com.example.demo.service;
 
 import com.example.demo.DTO.UserDocumentSessionDTO;
 import com.example.demo.model.UserDocument;
-import com.example.demo.repository.DocumentRepository;
 import com.example.demo.repository.UserDocumentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,10 +14,12 @@ public class UserDocumentService {
 
     @Autowired
     private final UserDocumentRepository userDocumentRepository;
-
     public UserDocumentService( UserDocumentRepository userDocumentRepository) {
         this.userDocumentRepository=userDocumentRepository;
     }
+
+
+    @Transactional
     public UserDocumentSessionDTO getUserDocumentById(Long id) {
         try{
             Optional<UserDocument> userDocument = userDocumentRepository.findById(id);
@@ -33,9 +34,15 @@ public class UserDocumentService {
 
         }
     }
+
+
+    @Transactional
     public UserDocument get_doc_by_userId(Long userId){
         return userDocumentRepository.findByUserId(userId);
     }
+
+
+    @Transactional
     public UserDocumentSessionDTO updateDoc(Long id, UserDocumentSessionDTO dto) {
         try {
             Optional<UserDocument> userDocumentOptional = userDocumentRepository.findById(id);
@@ -54,6 +61,9 @@ public class UserDocumentService {
             return new UserDocumentSessionDTO("Error found in User documents");
         }
     }
+
+
+    @Transactional
     public UserDocumentSessionDTO patchDoc(Long id, UserDocumentSessionDTO dto) {
         try {
             Optional<UserDocument> userDocumentOptional = userDocumentRepository.findById(id);
@@ -80,6 +90,9 @@ public class UserDocumentService {
             return new UserDocumentSessionDTO("Error found in User documents");
         }
     }
+
+
+    @Transactional
     public UserDocumentSessionDTO deleteDoc(Long id) {
         try {
             Optional<UserDocument> userDocumentOptional = userDocumentRepository.findById(id);
@@ -97,6 +110,8 @@ public class UserDocumentService {
             return new UserDocumentSessionDTO("Error deleting User document: " + e.getMessage());
         }
     }
+
+
     private UserDocumentSessionDTO convertToDTO(UserDocument doc) {
         UserDocumentSessionDTO dto = new UserDocumentSessionDTO();
         // Set fields from doc to dto

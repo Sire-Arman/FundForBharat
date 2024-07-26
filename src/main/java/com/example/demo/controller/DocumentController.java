@@ -1,7 +1,6 @@
 package com.example.demo.controller;
 
 import com.example.demo.DTO.DocumentSessionDTO;
-import com.example.demo.DTO.DonationSessionDTO;
 import com.example.demo.model.Campaign;
 import com.example.demo.model.Document;
 import com.example.demo.service.DocumentService;
@@ -9,9 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-//import javax.print.Doc;
-import javax.print.Doc;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;

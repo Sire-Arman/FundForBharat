@@ -9,14 +9,20 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.*;
+//ToDo
+//endpoint transactional annotation-pending
+//export to fundraiser grp(Monday) - pending
+//first step is jwt generation
+//Add campaign document in the response of get-campaigns
+//Handle 400 series errors in each controller before calling services
+//add comments where ever possible
 
+// ----------------------------- //
 //fix the get all campaign with donations endpoint-done
 //path variable to request param-done
 //proper collection for postman-done
-//export to fundraiser grp(Monday) - pending
 //implement jwt asap-pending
-//endpoint transactional annotation-done
-//user error handling correctly.-done
+//user error handling correctly. - done
 
 @RestController
 @RequestMapping("/api/campaigns")
@@ -29,8 +35,6 @@ public class CampaignController {
 
     @GetMapping("/get-all")
     public ResponseEntity<List<Campaign>> getAllCampaigns() {
-//        System.out.println(campaign);
-
         try {
             List<Campaign> AllCampaigns = campaignServices.getAllCampaigns();
             if (AllCampaigns.isEmpty()) {
@@ -46,16 +50,6 @@ public class CampaignController {
         List<CampaignWithDonationsDTO> campaigns = campaignServices.getAllCampaignsWithDonations();
         return ResponseEntity.ok(campaigns);
     }
-//    @GetMapping("/get-all-with-donations")
-//    public ResponseEntity<List<Campaign>> getAllWithDonations() {
-//        try {
-//            List<Campaign> campaigns = campaignServices.getAllWithDonations();
-//            return ResponseEntity.ok(campaigns);
-//        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-//        }
-//    }
-
     //  home page campaigns(handled by super admins)
     @GetMapping("/get-homepage-campaigns")
     public ResponseEntity<List<Campaign>> getHomePageCampaigns() {

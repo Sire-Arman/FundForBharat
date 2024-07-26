@@ -8,10 +8,8 @@ import com.example.demo.repository.CampaignRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
 import java.util.*;
-
 import org.springframework.transaction.annotation.Transactional;
 
 
@@ -24,6 +22,10 @@ public class DonationService {
         this.campaignRepository = campaignRepository;
     }
 
+
+
+
+    @Transactional
     public Optional<List<Donation>> getDonationsByUserId(Long userId) {
         try {
             List<Donation> donations = donationRepository.findDonationsByUserId(userId);
@@ -33,6 +35,9 @@ public class DonationService {
             return Optional.empty();
         }
     }
+
+
+    @Transactional
     public Optional<List<Donation>> getAllDonations() {
         try {
             List<Donation> optionalDonations = donationRepository.findAllDonations();
@@ -42,6 +47,9 @@ public class DonationService {
             return Optional.empty();
         }
     }
+
+
+    @Transactional
     public Optional<Donation> getById(Long id) {
         try{
             return donationRepository.findById(id);
@@ -50,6 +58,9 @@ public class DonationService {
             return Optional.empty();
         }
     }
+
+
+    @Transactional
     public Optional<List<Donation>> getDonationsByCampaignId(Long campaignId) {
         try {
             List<Donation> donations = donationRepository.findDonationsByCampaignId(campaignId);
@@ -98,6 +109,9 @@ public class DonationService {
 
         return savedDonation;
     }
+
+
+    @Transactional
     public Donation updateDonation(Long id, DonationSessionDTO dto) {
         return donationRepository.findById(id)
                 .map(donation -> {
@@ -111,6 +125,9 @@ public class DonationService {
                 })
                 .orElseThrow(() -> new EntityNotFoundException("Donation not found with id: " + id));
     }
+
+
+    @Transactional
     public Boolean deleteById(Long id,Boolean AmountToBeReduced) {
         try {
             Optional<Donation> optionalDonation = donationRepository.findById(id);
@@ -131,15 +148,11 @@ public class DonationService {
 
                 // Then, delete the donation
                 donationRepository.deleteById(id);
-
-//                System.out.println("Donation with id " + id + " deleted successfully");
                 return true;
             } else {
-//                System.out.println("Donation with id " + id + " not found");
                 return false;
             }
         } catch (Exception e) {
-//            System.err.println("Error deleting donation with id " + id + ": " + e.getMessage());
             return false;
         }
     }

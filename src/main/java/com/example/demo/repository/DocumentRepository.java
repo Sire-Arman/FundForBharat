@@ -20,14 +20,4 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
     @Query("select u from Document u where u.campaign_id = :campaignId")
     List<Document> findByCampaignId(Long campaignId);
 
-
-//    // Find documents by file type
-//    List<Document> findByDocType(String doc);
-//
-//    // Find documents by file name containing a keyword (case-insensitive)
-//    List<Document> findByFileNameContainingIgnoreCase(String keyword);
-//
-//    // Find documents by campaign id and file type
-//    List<Document> findByCampaignIdAndFileType(Long campaignId, String fileType);
-
 }

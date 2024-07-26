@@ -26,12 +26,13 @@ public class DonationController {
     private final CampaignService campaignService;
     private final DocumentRepository documentRepository;
 
+    @Autowired
     public DonationController (DonationService donationService, DocumentService documentService, CampaignService campaignService, DocumentRepository documentRepository) {
         this.donationService = donationService;
         this.campaignService = campaignService;
         this.documentRepository = documentRepository;
     }
-//    add donations
+
     @GetMapping("/get-all")
     public ResponseEntity<?> getAllDonations() {
         try {
@@ -103,7 +104,6 @@ public class DonationController {
         }
     }
 //    Add donation
-//    @PostMapping("/")
     @PostMapping("/add-donation")
     public ResponseEntity<?> addDonation(@RequestBody DonationSessionDTO dto) {
         try {
@@ -113,6 +113,7 @@ public class DonationController {
             // Add the donation amount to the campaign
             Long campaignId = dto.getCampaign_id();
             Double donationAmount = dto.getAmount();
+            //call service only when the data body is clean : here handle 400 series errors
             boolean amountAdded = campaignService.addDonationAmount(campaignId, donationAmount);
 
             if (!amountAdded) {

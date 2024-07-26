@@ -30,8 +30,4 @@ public interface CampaignRepository extends JpaRepository<Campaign, Long> {
 
     @Query("SELECT c FROM Campaign c LEFT JOIN FETCH c.donations")
     List<Campaign> findAllWithDonations();
-//    @Query("SELECT DISTINCT c FROM Campaign c LEFT JOIN FETCH c.donations")
-//    List<Campaign> findAllWithDonations();
-//    @Query("Insert into Campaign () Values () ")
-//    Campaign addCampaign(Campaign campaign);
 }

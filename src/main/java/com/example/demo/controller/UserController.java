@@ -22,7 +22,7 @@ public class UserController {
         System.out.println(user);
 
         try {
-            UserSessionDTO userSessionDTO = userServices.loginUser(user.getEmail(), user.getPassword());
+            UserSessionDTO userSessionDTO = userServices.login(user);
 
             if (userSessionDTO == null) {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(userSessionDTO);
