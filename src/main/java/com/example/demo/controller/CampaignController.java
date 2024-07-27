@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.*;
 //ToDo
-//endpoint transactional annotation-pending
 //export to fundraiser grp(Monday) - pending
 //first step is jwt generation
 //Add campaign document in the response of get-campaigns
@@ -18,6 +17,7 @@ import java.util.*;
 //add comments where ever possible
 
 // ----------------------------- //
+//endpoint transactional annotation-done
 //fix the get all campaign with donations endpoint-done
 //path variable to request param-done
 //proper collection for postman-done
@@ -34,13 +34,16 @@ public class CampaignController {
     }
 
     @GetMapping("/get-all")
-    public ResponseEntity<List<Campaign>> getAllCampaigns() {
+    public ResponseEntity<?> getAllCampaigns() {
         try {
-            List<Campaign> AllCampaigns = campaignServices.getAllCampaigns();
-            if (AllCampaigns.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.OK).body(AllCampaigns);
-            }
-            return ResponseEntity.ok(AllCampaigns);
+//            List<Campaign> AllCampaigns = campaignServices.getAllCampaigns();
+//            if (AllCampaigns.isEmpty()) {
+//                return ResponseEntity.status(HttpStatus.OK).body(AllCampaigns);
+//            }
+//            return ResponseEntity.ok(AllCampaigns);
+            List<CampaignWithDonationsDTO> campaigns = campaignServices.getAllCampaignsWithDonations();
+            return ResponseEntity.ok(campaigns);
+
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }

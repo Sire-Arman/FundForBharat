@@ -59,8 +59,12 @@ public class Campaign {
 
 
 //    testing
-@OneToMany(mappedBy = "campaign", fetch = FetchType.LAZY)
-private List<Donation> donations = new ArrayList<>();
+    @JsonIgnore
+    @OneToMany(mappedBy = "campaign", fetch = FetchType.LAZY)
+    private List<Donation> donations = new ArrayList<>();
+    @JsonIgnore
+    @OneToMany(mappedBy = "campaign", fetch = FetchType.LAZY)
+    private List<Document> documents = new ArrayList<>();
 
 
     @PrePersist

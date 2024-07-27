@@ -1,8 +1,10 @@
 package com.example.demo.service;
 import com.example.demo.DTO.CampaignSessionDTO;
 import com.example.demo.DTO.CampaignWithDonationsDTO;
+import com.example.demo.DTO.DocumentSessionDTO;
 import com.example.demo.DTO.DonationSessionDTO;
 import com.example.demo.model.Campaign;
+import com.example.demo.model.Document;
 import com.example.demo.model.Donation;
 import com.example.demo.repository.CampaignRepository;
 import jakarta.transaction.Transactional;
@@ -121,12 +123,6 @@ public class CampaignService {
 
 
     @Transactional
-    public List<Campaign> getAllCampaigns() {
-        return campaignRepository.findAllCampaigns();
-    }
-
-
-    @Transactional
     public boolean addDonationAmount(Long id, Double amount) {
         Optional<Campaign> optionalCampaign = campaignRepository.findById(id);
 
@@ -157,20 +153,24 @@ public class CampaignService {
     }
 
     @Transactional
+    public List<Campaign> getCampaignWithDonation() {
+        return campaignRepository.findCampaignsByDonations();
+    }
+    @Transactional
     public List<CampaignWithDonationsDTO> getAllCampaignsWithDonations() {
-        List<Campaign> campaigns = campaignRepository.findAllWithDonations();
+        List<Campaign> campaigns = campaignRepository.findAllCampaigns();
+//        return null;
         return campaigns.stream()
-                .map(this::convertToCampaignWithDonationsDTO)
+                .map(this::convertToCampaignWithDonationsAndDocumentsDTO)
                 .collect(Collectors.toList());
     }
 
-    private CampaignWithDonationsDTO convertToCampaignWithDonationsDTO(Campaign campaign) {
+    private CampaignWithDonationsDTO convertToCampaignWithDonationsAndDocumentsDTO(Campaign campaign) {
         CampaignWithDonationsDTO dto = new CampaignWithDonationsDTO();
         dto.setId(campaign.getId());
         dto.setUserId(campaign.getUser_id());
         dto.setTitle(campaign.getTitle());
         dto.setDescription(campaign.getDescription());
-
         dto.setTargetAmount(campaign.getTarget_amount());
         dto.setAmountRaised(campaign.getAmount_raised());
         dto.setStartDate(campaign.getStart_date());
@@ -178,6 +178,9 @@ public class CampaignService {
         dto.setDonations(campaign.getDonations().stream()
                 .map(this::convertToDonationDTO)
                 .collect(Collectors.toList()));
+        dto.setDocuments(campaign.getDocuments().stream()
+                .map(this::convertToDocumentDTO)
+                .collect((Collectors.toList())));
         return dto;
     }
 
@@ -190,6 +193,17 @@ public class CampaignService {
         dto.setAmount(donation.getAmount());
         dto.setModeOfPayment(donation.getMode_of_payment());
         dto.setDonation_date(donation.getDonation_date());
+        return dto;
+    }
+    private DocumentSessionDTO convertToDocumentDTO(Document document) {
+        DocumentSessionDTO dto = new DocumentSessionDTO();
+        dto.setId(document.getId());
+        dto.setDoc_type(document.getDoc_type());
+        dto.setDoc_url(document.getDoc_url());
+        dto.setRemarks(document.getRemarks());
+        dto.setStatus(document.getStatus());
+        dto.setUpload_date(document.getUpload_date());
+        dto.setUpload_user(document.getUpload_user());
         return dto;
     }
 

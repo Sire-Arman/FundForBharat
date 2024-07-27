@@ -34,6 +34,7 @@ public class UserService {
         this.authenticationManager = authenticationManager;
     }
 
+
     @Transactional
     public UserSessionDTO register(UserSessionDTO request) {
         try {
@@ -102,6 +103,11 @@ public class UserService {
             System.out.println(e.getCause() + "======="+ e.getMessage());
             return new UserSessionDTO("Invalid Credentials!!");
         }
+    }
+    @Transactional
+    public Boolean UserExists(String email) {
+        User user = userRepository.findByEmail(email);
+        return user != null;
     }
 
 }

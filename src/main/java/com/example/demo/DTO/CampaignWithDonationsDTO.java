@@ -27,6 +27,7 @@ public class CampaignWithDonationsDTO {
     private LocalDate startDate;
     private LocalDate endDate;
     private List<DonationSessionDTO> donations;
+    private List<DocumentSessionDTO> documents;
 
     // Constructor, getters, and setters
 }

@@ -40,6 +40,10 @@ public class Document {
     @Column
     private String remarks;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "campaign_id", insertable = false, updatable = false)
+    private Campaign campaign;
+
 //    testing
 
 }

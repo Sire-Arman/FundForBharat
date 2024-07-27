@@ -28,6 +28,10 @@ public interface CampaignRepository extends JpaRepository<Campaign, Long> {
     @Query("Select u from Campaign u where u.toBeShown=true")
     List<Campaign> findHomePageCampaigns();
 
-    @Query("SELECT c FROM Campaign c LEFT JOIN FETCH c.donations")
+    @Query("SELECT c FROM Campaign c LEFT JOIN FETCH c.donations LEFT JOIN FETCH c.documents")
     List<Campaign> findAllWithDonations();
+//    @Query("SELECT c FROM Campaign c")
+//    List<Campaign> findAllWithDonations();
+    @Query("SELECT c FROM Campaign c LEFT JOIN c.donations d LEFT JOIN c.documents doc")
+    List<Campaign> findCampaignsByDonations();
 }
