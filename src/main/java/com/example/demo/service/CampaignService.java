@@ -6,15 +6,16 @@ import com.example.demo.DTO.DonationSessionDTO;
 import com.example.demo.model.Campaign;
 import com.example.demo.model.Document;
 import com.example.demo.model.Donation;
+import com.example.demo.model.PaymentMode;
 import com.example.demo.repository.CampaignRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.util.Map;
+
+import java.time.LocalDateTime;
+import java.util.*;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,11 +27,11 @@ public class CampaignService {
     }
 
     /**
-     * this methods takes
+     * this method takes in Campaign DTO
      * sets data
      * saves data
      * @param campaignDTO
-     * @return
+     * @returns saved data.
      */
 
     @Transactional
@@ -55,6 +56,13 @@ public class CampaignService {
          return campaignRepository.save(campaign);
     }
 
+    /**
+     * this method takes in Campaign Id
+     * returns Optional Campaign Object
+     * @param id
+     * @return Campaign
+     */
+
 
     @Transactional
     public Optional<Campaign> getCampaignById(Long id) {
@@ -62,6 +70,13 @@ public class CampaignService {
     }
 
 
+    /**
+     * this method takes in Campaign Id and a map of
+     * String (denoting column) and object (denoting column value)
+     * returns Optional Campaign Object
+     * @param id
+     * *@param Map<String,Object>
+     */
     @Transactional
     public Optional<Campaign> partialUpdateCampaign(Long id, Map<String, Object> updates) {
         Optional<Campaign> campaignOpt = campaignRepository.findCampaignById(id);
@@ -96,7 +111,13 @@ public class CampaignService {
         }
     }
 
-
+    /**
+     * This method takes id and campaignDTO to completely update
+     * a Campaign and returns it
+     * @param id
+     * @param campaignDTO
+     * @return Campaign
+     */
     @Transactional
     public Optional<Campaign> updateCampaign(Long id, CampaignSessionDTO campaignDTO) {
         return campaignRepository.findById(id)
@@ -111,7 +132,12 @@ public class CampaignService {
                 });
     }
 
-
+    /**
+     * Deletes a Campaign with given id
+     * return false if failed
+     * @param id
+     * @return
+     */
     @Transactional
     public boolean deleteCampaign(Long id) {
         if (campaignRepository.existsById(id)) {
@@ -121,7 +147,13 @@ public class CampaignService {
         return false;
     }
 
-
+    /**
+     * Finds a campaign by given and
+     * adds amount to its amount_raised
+     * @param id
+     * @param amount
+     * @return
+     */
     @Transactional
     public boolean addDonationAmount(Long id, Double amount) {
         Optional<Campaign> optionalCampaign = campaignRepository.findById(id);
@@ -140,71 +172,138 @@ public class CampaignService {
         }
     }
 
-
+    /**
+     * gives a List of top funded campaigns
+     * @return List
+     */
     @Transactional
     public List<Campaign> getTopFundedCampaigns(){
         return campaignRepository.findTop10ByOrderByAmountRaisedDesc();
     }
 
-
+    /**
+     * Returns a list of campaigns to be displayed at home page
+     * handled by super admin
+     * @return List
+     */
     @Transactional
-    public List<Campaign> getHomePageCampaigns(){
+    public List<CampaignWithDonationsDTO> getHomePageCampaigns(){
         return campaignRepository.findHomePageCampaigns();
     }
 
+    /**
+     * Returns a specific Campaign with its donations and documents
+     * using given id
+     * @param id
+     * @return
+     */
     @Transactional
-    public List<Campaign> getCampaignWithDonation() {
-        return campaignRepository.findCampaignsByDonations();
+    public CampaignWithDonationsDTO getCampaignWithDonationAndDocumentById(Long id){
+        Object[] row = campaignRepository.findCampaignsWithDonationsAndDocuments(id);
+
+        Long campaignId = (Long) row[0];
+        if(campaignId == null){
+            return null;
+        }
+            CampaignWithDonationsDTO dto = getCampaignWithDonationsDTO(row);
+
+        if (row[11] != null) {
+            Long donationId = (Long) row[11];// Donation data exists
+            if (dto.getDonations().stream().noneMatch(d -> d.getId().equals(donationId))) {
+                DonationSessionDTO donation = getDonationSessionDTO(row);
+                dto.getDonations().add(donation);
+            }
+        }
+
+        if (row[18] != null) {
+            // Document data exists
+            Long documentId = (Long) row[18];
+            if (dto.getDocuments().stream().noneMatch(d -> d.getId().equals(documentId))) {
+                DocumentSessionDTO document = getDocumentSessionDTO(row);
+                dto.getDocuments().add(document);
+            }
+        }
+        return dto;
     }
+
+    /**
+     * This methods returns a List of Campaigns
+     * along with donations and documents
+     * @return CampaignWithDonationsDTO
+     */
     @Transactional
     public List<CampaignWithDonationsDTO> getAllCampaignsWithDonations() {
-        List<Campaign> campaigns = campaignRepository.findAllCampaigns();
-//        return null;
-        return campaigns.stream()
-                .map(this::convertToCampaignWithDonationsAndDocumentsDTO)
-                .collect(Collectors.toList());
+            List<Object[]> results = campaignRepository.findAllCampaignsWithDonationsAndDocuments();
+            Map<Long, CampaignWithDonationsDTO> campaignMap = new LinkedHashMap<>();
+
+            for (Object[] row : results) {
+                Long campaignId = (Long) row[0];
+                CampaignWithDonationsDTO campaign = campaignMap.computeIfAbsent(campaignId, id -> {
+                    return getCampaignWithDonationsDTO(row);
+                });
+
+                if (row[11] != null) {
+                    Long donationId = (Long) row[11];// Donation data exists
+                    if (campaign.getDonations().stream().noneMatch(d -> d.getId().equals(donationId))) {
+                        DonationSessionDTO donation = getDonationSessionDTO(row);
+                        campaign.getDonations().add(donation);
+                    }
+                }
+
+                if (row[18] != null) {
+                    // Document data exists
+                    Long documentId = (Long) row[18];
+                    if (campaign.getDocuments().stream().noneMatch(d -> d.getId().equals(documentId))) {
+                        DocumentSessionDTO document = getDocumentSessionDTO(row);
+                        campaign.getDocuments().add(document);
+                    }
+                }
+            }
+
+            return new ArrayList<>(campaignMap.values());
+        }
+
+        private static CampaignWithDonationsDTO getCampaignWithDonationsDTO(Object[] row) {
+            CampaignWithDonationsDTO dto = new CampaignWithDonationsDTO();
+            dto.setId((Long) row[0]);
+            dto.setUserId((Long) row[1]);
+            dto.setTitle((String) row[2]);
+            dto.setDescription((String) row[3]);
+            dto.setStartDate((LocalDate) row[4]);
+            dto.setEndDate((LocalDate) row[5]);
+            dto.setTargetAmount((Double) row[6]);
+            dto.setAmountRaised((Double) row[7]);
+            dto.setCreatedAt((LocalDateTime) row[8]);
+            dto.setUpdatedAt((LocalDateTime) row[9]);
+            dto.setToBeShown((String) row[10]);
+            dto.setDonations(new ArrayList<>());
+            dto.setDocuments(new ArrayList<>());
+            return dto;
+        }
+
+    private static DonationSessionDTO getDonationSessionDTO(Object[] row) {
+        DonationSessionDTO donation = new DonationSessionDTO();
+        donation.setId((Long) row[11]);
+        donation.setUser_id((Long) row[12]);
+        donation.setCampaign_id((Long) row[13]);
+        donation.setAlias_name((String) row[14]);
+        donation.setAmount((Double) row[15]);
+        donation.setModeOfPayment((PaymentMode) row[16]);
+        donation.setDonation_date((LocalDate) row[17]);
+        return donation;
     }
 
-    private CampaignWithDonationsDTO convertToCampaignWithDonationsAndDocumentsDTO(Campaign campaign) {
-        CampaignWithDonationsDTO dto = new CampaignWithDonationsDTO();
-        dto.setId(campaign.getId());
-        dto.setUserId(campaign.getUser_id());
-        dto.setTitle(campaign.getTitle());
-        dto.setDescription(campaign.getDescription());
-        dto.setTargetAmount(campaign.getTarget_amount());
-        dto.setAmountRaised(campaign.getAmount_raised());
-        dto.setStartDate(campaign.getStart_date());
-        dto.setEndDate(campaign.getEnd_date());
-        dto.setDonations(campaign.getDonations().stream()
-                .map(this::convertToDonationDTO)
-                .collect(Collectors.toList()));
-        dto.setDocuments(campaign.getDocuments().stream()
-                .map(this::convertToDocumentDTO)
-                .collect((Collectors.toList())));
-        return dto;
-    }
-
-    private DonationSessionDTO convertToDonationDTO(Donation donation) {
-        DonationSessionDTO dto = new DonationSessionDTO();
-        dto.setId(donation.getId());
-        dto.setUser_id(donation.getUser_id());
-        dto.setCampaign_id(donation.getCampaign_id());
-        dto.setAlias_name(donation.getAlias_name());
-        dto.setAmount(donation.getAmount());
-        dto.setModeOfPayment(donation.getMode_of_payment());
-        dto.setDonation_date(donation.getDonation_date());
-        return dto;
-    }
-    private DocumentSessionDTO convertToDocumentDTO(Document document) {
-        DocumentSessionDTO dto = new DocumentSessionDTO();
-        dto.setId(document.getId());
-        dto.setDoc_type(document.getDoc_type());
-        dto.setDoc_url(document.getDoc_url());
-        dto.setRemarks(document.getRemarks());
-        dto.setStatus(document.getStatus());
-        dto.setUpload_date(document.getUpload_date());
-        dto.setUpload_user(document.getUpload_user());
-        return dto;
+    private static DocumentSessionDTO getDocumentSessionDTO(Object[] row) {
+        DocumentSessionDTO document = new DocumentSessionDTO();
+        document.setId((Long) row[18]);
+        document.setDoc_type((String) row[19]);
+        document.setDoc_url((String) row[20]);
+        document.setCampaign_id((Long) row[21]);
+        document.setRemarks((String) row[22]);
+        document.setStatus((String) row[23]);
+        document.setUpload_date((LocalDate) row[24]);
+        document.setUpload_user((Long) row[25]);
+        return document;
     }
 
 }

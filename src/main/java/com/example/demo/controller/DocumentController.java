@@ -74,7 +74,6 @@ public class DocumentController {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body("No documents found for Campaign id : "+ CampaignId);
             }
             return ResponseEntity.ok(documents);
-
         }catch(Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }

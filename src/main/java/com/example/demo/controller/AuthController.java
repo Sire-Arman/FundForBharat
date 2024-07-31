@@ -5,6 +5,7 @@ import com.example.demo.Exceptions.UserAlreadyExistsException;
 import com.example.demo.service.UserService;
 import com.example.demo.Exceptions.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,47 +16,59 @@ public class AuthController {
     private final UserService userServices;
 
     @Autowired
-    public AuthController(UserService userServices) {
-        this.userServices = userServices;
-
-    }
+    public AuthController(UserService userServices) {this.userServices = userServices;}
 
     @PostMapping("/login")
-    public ResponseEntity<UserSessionDTO> login(@RequestBody UserSessionDTO user) {
+    public ResponseEntity<?> login(@RequestBody UserSessionDTO user) {
         try {
-            if (user == null || user.getEmail()==null || user.getUsername() == null || user.getPassword() == null) {
-                throw new BadRequestException("Username, Email or password cannot be null");
+            // Validate input
+            if (user == null || user.getEmail() == null || user.getPassword() == null) {
+                return ResponseEntity.badRequest().body("Email and password are required");
             }
-            else if (!userServices.UserExists(user.getEmail())){
-                throw new BadRequestException("User does not exist");
+
+            // Check if user exists
+            if (!userServices.UserExists(user.getEmail())) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
             }
-            else return ResponseEntity.ok(userServices.login(user));
-        } catch (BadRequestException ex) {
-            throw new BadRequestException("Invalid login credentials");
-        }catch (Exception e){
-            throw new RuntimeException("Something went wrong");
+
+            // Attempt login
+            UserSessionDTO loggedInUser = userServices.login(user);
+            if (loggedInUser != null) {
+                return ResponseEntity.ok(loggedInUser);
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
+            }
+
+        } catch (Exception e) {
+            // Log the exception
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred during login");
         }
     }
 
     @PostMapping("/register")
     public ResponseEntity<?> signup(@RequestBody UserSessionDTO user) {
-        try{
-            if(user == null || user.getEmail()==null ||user.getUsername() == null || user.getPassword() == null) {
-                throw new BadRequestException("Username or password cannot be null");
+        try {
+            // Validate input
+            if (user == null || user.getEmail() == null || user.getUsername() == null || user.getPassword() == null) {
+                return ResponseEntity.badRequest().body("Email, username, and password are required");
             }
-            else if(userServices.UserExists(user.getEmail())){
-                throw new UserAlreadyExistsException("A user with this email already exists");
+
+            if (user.getRoles() == null || user.getRoles().isEmpty()) {
+                return ResponseEntity.badRequest().body("At least one role must be specified");
             }
-            else if(user.getRoles() == null){
-                throw new BadRequestException("Roles cannot be null");
+
+            // Check if user already exists
+            if (userServices.UserExists(user.getEmail())) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("A user with this email already exists");
             }
-            else return ResponseEntity.ok(userServices.register(user));
-        }
-        catch(BadRequestException | UserAlreadyExistsException ex){
-            throw ex;
-        }
-        catch (Exception e){
-            throw new RuntimeException("Something went wrong");
+
+            // Attempt registration
+            UserSessionDTO registeredUser = userServices.register(user);
+            return ResponseEntity.status(HttpStatus.CREATED).body(registeredUser);
+
+        } catch (Exception e) {
+            // Log the exception
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred during registration");
         }
     }
 

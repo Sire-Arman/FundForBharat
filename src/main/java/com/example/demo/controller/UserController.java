@@ -25,7 +25,7 @@ public class UserController {
             UserSessionDTO userSessionDTO = userServices.login(user);
 
             if (userSessionDTO == null) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(userSessionDTO);
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
             }
             return ResponseEntity.ok(userSessionDTO);
         } catch (Exception e) {

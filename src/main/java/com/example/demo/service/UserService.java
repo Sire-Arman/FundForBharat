@@ -91,6 +91,7 @@ public class UserService {
 
             // Fetch user details
             User user = userRepository.findByEmail(request.getEmail());
+//            System.out.println("THis is : ========================="+user);
             Role role = user.getRole();
 
             // Generate JWT token
