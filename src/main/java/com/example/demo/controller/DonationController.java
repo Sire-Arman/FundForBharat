@@ -28,7 +28,7 @@ public class DonationController {
     private final DocumentRepository documentRepository;
 
     @Autowired
-    public DonationController (DonationService donationService, DocumentService documentService, CampaignService campaignService, DocumentRepository documentRepository) {
+    public DonationController (DonationService donationService, CampaignService campaignService, DocumentRepository documentRepository) {
         this.donationService = donationService;
         this.campaignService = campaignService;
         this.documentRepository = documentRepository;

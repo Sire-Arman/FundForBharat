@@ -18,7 +18,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
 
-//    we overrided this method for email rather than username
+//    we have overridden this method for email rather than username
 
     @Override
     @Transactional

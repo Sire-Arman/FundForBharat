@@ -1,7 +1,9 @@
 package com.example.demo.config;
 
+import com.example.demo.Exceptions.CustomAccessDeniedHandler;
 import com.example.demo.filter.JwtAuthenticationFilter;
 import com.example.demo.service.UserDetailsServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -33,6 +35,8 @@ public class SecurityConfig {
     }
 
 
+    @Autowired
+    private CustomAccessDeniedHandler accessDeniedHandler;
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
@@ -44,7 +48,10 @@ public class SecurityConfig {
                         .requestMatchers("/api/admins/campaigns").hasAuthority("CAMPAIGN_ADMIN")
                         .requestMatchers("/api/admins/document").hasAuthority("DOCUMENT_ADMIN")
                         .requestMatchers("/api/admins/payment").hasAuthority("PAYMENT_ADMIN")
+                        .requestMatchers("/api/documents/**").hasAuthority("DOCUMENT_ADMIN")
+                        .requestMatchers("/api/donations/**").hasAuthority("DONATION_ADMIN")
                         .anyRequest().authenticated())
+                .exceptionHandling(handling-> handling.accessDeniedHandler(accessDeniedHandler))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
