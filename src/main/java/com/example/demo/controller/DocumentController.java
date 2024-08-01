@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import com.example.demo.DTO.DocumentSessionDTO;
 import com.example.demo.model.Campaign;
 import com.example.demo.model.Document;
+import com.example.demo.model.Status;
 import com.example.demo.service.CampaignService;
 import com.example.demo.service.DocumentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,7 +107,7 @@ public class DocumentController {
     }
     @PostMapping("/add-doc")
     public ResponseEntity<?> addDoc(@RequestBody DocumentSessionDTO dto) {
-        if(dto == null) {
+        if(dto.equals(null)) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("data is mandatory");
         }
         List<String> errors = validateDocument(dto);
@@ -126,7 +127,7 @@ public class DocumentController {
         }
     }
     @PutMapping
-    public ResponseEntity<?> updateDoc(@RequestParam Long id,@RequestBody DocumentSessionDTO dto) {
+    public ResponseEntity<?> updateDoc(@RequestParam Long id, @RequestBody DocumentSessionDTO dto) {
         if(dto == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("data is mandatory");
         }
@@ -216,9 +217,18 @@ public class DocumentController {
         if (documentDto.getUpload_user() == null || documentDto.getUpload_user() <= 0) {
             errors.add("Upload user ID must be a positive number");
         }
-        if (documentDto.getStatus() == null || documentDto.getStatus().trim().isEmpty()) {
+        if(documentDto.getStatus() == "null" ){
             errors.add("Status is required");
         }
+//        if (documentDto.getStatus() == null) {
+//            errors.add("Status is required");
+//        } else {
+//            try {
+//                Status.valueOf(documentDto.getStatus().toString());
+//            } catch (IllegalArgumentException e) {
+//                errors.add("Invalid status value: " + documentDto.getStatus());
+//            }
+//        }
         // Remarks and errorMessage can be null or empty, so we don't validate them
 //        validateDate(documentDto.getUpload_date(), "Upload_date",false,errors);
         return errors;

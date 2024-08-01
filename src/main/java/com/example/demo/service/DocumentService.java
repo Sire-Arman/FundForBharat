@@ -2,6 +2,7 @@ package com.example.demo.service;
 
 import com.example.demo.DTO.DocumentSessionDTO;
 import com.example.demo.model.Document;
+import com.example.demo.model.Status;
 import com.example.demo.repository.DocumentRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -112,7 +113,16 @@ public class DocumentService {
             if (updates.containsKey("upload_user")) {
                 document.setUpload_user(Long.valueOf(updates.get("upload_user").toString()));
             }
-            if (updates.containsKey("status")) {
+//            if (updates.containsKey("status")) {
+//                try {
+//                    Status status = Status.valueOf(updates.get("status").toString().toUpperCase());
+//                    document.setStatus(status);
+//                } catch (IllegalArgumentException e) {
+//                    // Handle invalid status string
+//                    throw new IllegalArgumentException("Invalid status value: " + updates.get("status"));
+//                }
+//            }
+            if(updates.containsKey("status")){
                 document.setStatus(updates.get("status").toString());
             }
             if (updates.containsKey("remarks")) {

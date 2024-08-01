@@ -36,10 +36,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access Denied: You don't have permission to access this resource.");
     }
 
-//    @ExceptionHandler(Exception.class)
-//    public ResponseEntity<String> handleGenericException(Exception ex) {
-//        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: " + ex.getMessage());
-//    }
 
     // Handle missing request parameters
     @ExceptionHandler(MissingServletRequestParameterException.class)

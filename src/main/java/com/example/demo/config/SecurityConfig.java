@@ -49,7 +49,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/admins/document").hasAuthority("DOCUMENT_ADMIN")
                         .requestMatchers("/api/admins/payment").hasAuthority("PAYMENT_ADMIN")
                         .requestMatchers("/api/documents/**").hasAuthority("DOCUMENT_ADMIN")
-                        .requestMatchers("/api/donations/**").hasAuthority("DONATION_ADMIN")
+                        .requestMatchers("/api/donations/**").hasAuthority("PAYMENT_ADMIN")
                         .anyRequest().authenticated())
                 .exceptionHandling(handling-> handling.accessDeniedHandler(accessDeniedHandler))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

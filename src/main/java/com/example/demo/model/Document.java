@@ -34,9 +34,9 @@ public class Document {
 //    stores userid
     private Long upload_user;
 
-    @Column
+    @Column(nullable = false)
+//    private Status status;
     private String status;
-
     @Column
     private String remarks;
 

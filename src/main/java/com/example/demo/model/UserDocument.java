@@ -32,8 +32,8 @@ public class UserDocument {
     private String Doc_url;
 
     @Column(nullable = false)
+//    private Status status;
     private String status;
-
     @Column
     private String remarks;
 

@@ -146,6 +146,7 @@ public class CampaignController {
 
     @PostMapping("/create-campaign")
     public ResponseEntity<?> createCampaign(@RequestBody CampaignSessionDTO campaignDTO) {
+
         try{
 //            Campaign cmp = new Campaign(campaignDTO.getId(), campaignDTO.getDescription(), campaignDTO.getTitle(), campaignDTO.getUserId());
             Campaign createdCampaign = campaignServices.createCampaign(campaignDTO);

@@ -15,10 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.time.LocalDate;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/donations")
@@ -57,6 +55,9 @@ public class DonationController {
 
     @GetMapping("/get-by-id")
     public ResponseEntity<?> getDonationById(@RequestParam("id") Long id) {
+        if(id.equals(null)){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid input parameters");
+        }
         try {
             Optional<Donation> donationOptional = donationService.getById(id);
             if (donationOptional.isPresent()) {
@@ -75,6 +76,9 @@ public class DonationController {
 
     @GetMapping("/get-by-userId")
     public ResponseEntity<?> getDonationsByUserId(@RequestParam Long userId) {
+        if(userId.equals(null)){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid input parameters");
+        }
         try {
             Optional<List<Donation>> optionalDonations = donationService.getDonationsByUserId(userId);
             if (optionalDonations.isPresent() && !optionalDonations.get().isEmpty()) {
@@ -92,6 +96,9 @@ public class DonationController {
     //    get donations by campaign id
     @GetMapping("/get-by-campaignId")
     public ResponseEntity<?> getDonationsByCampaignId(@RequestParam Long campaignId) {
+        if(campaignId.equals(null)){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid input parameters");
+        }
         try {
             Optional<List<Donation>> optionalDonations = donationService.getDonationsByCampaignId(campaignId);
 
@@ -110,6 +117,10 @@ public class DonationController {
     //    Add donation
     @PostMapping("/add-donation")
     public ResponseEntity<?> addDonation(@RequestBody DonationSessionDTO dto) {
+        List<String> errors = validateDTO(dto);
+        if (!errors.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+        }
         try {
             // Validate input data (you can add more validation if needed)
             if (dto.getCampaign_id() == null || dto.getAmount() == null || dto.getAmount() <= 0) {
@@ -147,9 +158,14 @@ public class DonationController {
 
     @PutMapping("/update-donation")
     public ResponseEntity<?> updateDonation(@RequestParam Long id, @RequestBody DonationSessionDTO dto) {
+
+        List<String> errors = validateDTO(dto);
+        if (!errors.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+        }
         try {
             // Validate input data (you can add more validation if needed)
-            if (id == null || dto == null) {
+            if (dto.equals(null)) {
                 throw new IllegalArgumentException("Donation ID and update data must be provided.");
             }
 
@@ -166,6 +182,9 @@ public class DonationController {
 
     @DeleteMapping("/delete-donation")
     public ResponseEntity<?> deleteDonation(@RequestParam Long id, @RequestParam(defaultValue = "true") Boolean AmountToBeReduced) {
+        if(id.equals(null)){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid input parameters");
+        }
         try {
             // Validate input data (you can add more validation if needed)
             if (id == null) {
@@ -184,6 +203,35 @@ public class DonationController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while deleting the donation: " + e.getMessage());
         }
+    }
+
+    private List<String> validateDTO(DonationSessionDTO donationDto) {
+        List<String> errors = new ArrayList<>();
+
+        if (donationDto.getId() != null && donationDto.getId() <= 0) {
+            errors.add("ID must be a positive number");
+        }
+        if (donationDto.getUser_id() == null || donationDto.getUser_id() <= 0) {
+            errors.add("User ID is required and must be a positive number");
+        }
+        if (donationDto.getCampaign_id() == null || donationDto.getCampaign_id() <= 0) {
+            errors.add("Campaign ID is required and must be a positive number");
+        }
+        if (donationDto.getAlias_name() == null || donationDto.getAlias_name().trim().isEmpty()) {
+            errors.add("Alias name is required");
+        }
+        if (donationDto.getAmount() == null || donationDto.getAmount() <= 0) {
+            errors.add("Amount is required and must be a positive number");
+        }
+        if (donationDto.getDonation_date() == null || donationDto.getDonation_date().isAfter(LocalDate.now())) {
+            errors.add("Donation date is required and must not be in the future");
+        }
+        if (donationDto.getModeOfPayment() == null) {
+            errors.add("Mode of payment is required");
+        }
+        // errorMessage can be null or empty, so we don't validate it
+
+        return errors;
     }
 
 }

@@ -9,6 +9,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
+
 @RestController
 @RequestMapping("/api/auth")
 @CrossOrigin(origins = "*")
@@ -20,6 +24,10 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody UserSessionDTO user) {
+//        List<String> errors = validateUser(user);
+//        if (!errors.isEmpty()) {
+//            return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+//        }
         try {
             // Validate input
             if (user == null || user.getEmail() == null || user.getPassword() == null) {
@@ -47,6 +55,10 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> signup(@RequestBody UserSessionDTO user) {
+        List<String> errors = validateUser(user);
+        if (!errors.isEmpty()) {
+            return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+        }
         try {
             // Validate input
             if (user == null || user.getEmail() == null || user.getUsername() == null || user.getPassword() == null) {
@@ -70,6 +82,42 @@ public class AuthController {
             // Log the exception
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred during registration");
         }
+    }
+    private List<String> validateUser(UserSessionDTO userDto) {
+        List<String> errors = new ArrayList<>();
+
+        if (userDto.getUserId() != null && userDto.getUserId() <= 0) {
+            errors.add("User ID must be a positive number");
+        }
+        if (userDto.getEmail() == null || userDto.getEmail().trim().isEmpty()) {
+            errors.add("Email is required");
+        } else if (!isValidEmail(userDto.getEmail())) {
+            errors.add("Invalid email format");
+        }
+        if (userDto.getUsername() == null || userDto.getUsername().trim().isEmpty()) {
+            errors.add("Username is required");
+        }
+        if (userDto.getFullname() == null || userDto.getFullname().trim().isEmpty()) {
+            errors.add("Full name is required");
+        }
+        if (userDto.getPassword() == null || userDto.getPassword().trim().isEmpty()) {
+            errors.add("Password is required");
+        } else if (userDto.getPassword().length() < 8) {
+            errors.add("Password must be at least 8 characters long");
+        }
+        if (userDto.getRoles() == null || userDto.getRoles().isEmpty()) {
+            errors.add("At least one role is required");
+        }
+        // errorMessage and token can be null or empty, so we don't validate them
+
+        return errors;
+    }
+    // Helper method to validate email format
+    private boolean isValidEmail(String email) {
+        String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
+        Pattern pattern = Pattern.compile(emailRegex);
+        if (email == null) return false;
+        return pattern.matcher(email).matches();
     }
 
 }
