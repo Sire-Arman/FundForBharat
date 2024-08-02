@@ -201,34 +201,45 @@ public class CampaignService {
      * @return
      */
     @Transactional
-    public CampaignWithDonationsDTO getCampaignWithDonationAndDocumentById(Long id){
-        Object[] row = campaignRepository.findCampaignsWithDonationsAndDocuments(id);
+    public CampaignWithDonationsDTO getCampaignWithDonationAndDocumentById(Long id) {
+        try {
+            Object[] row = campaignRepository.findCampaignsWithDonationsAndDocuments(id);
 
-        Long campaignId = (Long) row[0];
-        if(campaignId == null){
-            return null;
-        }
-            CampaignWithDonationsDTO dto = getCampaignWithDonationsDTO(row);
 
-        if (row[11] != null) {
-            Long donationId = (Long) row[11];// Donation data exists
-            if (dto.getDonations().stream().noneMatch(d -> d.getId().equals(donationId))) {
-                DonationSessionDTO donation = getDonationSessionDTO(row);
-                dto.getDonations().add(donation);
-            }
-        }
+            CampaignWithDonationsDTO dto = null;
 
-        if (row[18] != null) {
-            // Document data exists
-            Long documentId = (Long) row[18];
-            if (dto.getDocuments().stream().noneMatch(d -> d.getId().equals(documentId))) {
-                DocumentSessionDTO document = getDocumentSessionDTO(row);
-                dto.getDocuments().add(document);
-            }
+
+                Long campaignId = (Long) row[0];
+
+                if (dto == null) {
+                    dto = getCampaignWithDonationsDTO(row);
+                }
+
+                // Process donation
+                if (row[11] != null) {
+                    Long donationId = (Long) row[11];
+                    if (dto.getDonations().stream().noneMatch(d -> donationId.equals(d.getId()))) {
+                        DonationSessionDTO donation = getDonationSessionDTO(row);
+                        dto.getDonations().add(donation);
+                    }
+                }
+
+                // Process document
+                if (row[18] != null) {
+                    Long documentId = (Long) row[18];
+                    if (dto.getDocuments().stream().noneMatch(d -> documentId.equals(d.getId()))) {
+                        DocumentSessionDTO document = getDocumentSessionDTO(row);
+                        dto.getDocuments().add(document);
+                    }
+                }
+
+            return dto;
+
+        } catch (Exception e) {
+//            logger.error("Error fetching campaign with id: {}", id, e);
+            throw new RuntimeException("Error fetching campaign details", e);
         }
-        return dto;
     }
-
     /**
      * This methods returns a List of Campaigns
      * along with donations and documents
@@ -236,35 +247,72 @@ public class CampaignService {
      */
     @Transactional
     public List<CampaignWithDonationsDTO> getAllCampaignsWithDonations() {
-            List<Object[]> results = campaignRepository.findAllCampaignsWithDonationsAndDocuments();
+        List<CampaignWithDonationsDTO> results = new ArrayList<>();
+        try {
+            List<Object[]> rawResults = campaignRepository.findAllCampaignsWithDonationsAndDocuments();
             Map<Long, CampaignWithDonationsDTO> campaignMap = new LinkedHashMap<>();
 
-            for (Object[] row : results) {
-                Long campaignId = (Long) row[0];
-                CampaignWithDonationsDTO campaign = campaignMap.computeIfAbsent(campaignId, id -> {
-                    return getCampaignWithDonationsDTO(row);
-                });
+            for (Object[] row : rawResults) {
+                try {
+                    Long campaignId = (Long) row[0];
+//                    System.out.println("Processing campaign ID: " + campaignId);
 
-                if (row[11] != null) {
-                    Long donationId = (Long) row[11];// Donation data exists
-                    if (campaign.getDonations().stream().noneMatch(d -> d.getId().equals(donationId))) {
-                        DonationSessionDTO donation = getDonationSessionDTO(row);
-                        campaign.getDonations().add(donation);
-                    }
-                }
+                    CampaignWithDonationsDTO campaign = campaignMap.computeIfAbsent(campaignId, id -> {
+                        try {
+                            return getCampaignWithDonationsDTO(row);
+                        } catch (Exception e) {
+                            System.err.println("Error in getCampaignWithDonationsDTO for campaign ID: " + id);
+                            e.printStackTrace();
+                            return null;
+                        }
+                    });
 
-                if (row[18] != null) {
-                    // Document data exists
-                    Long documentId = (Long) row[18];
-                    if (campaign.getDocuments().stream().noneMatch(d -> d.getId().equals(documentId))) {
-                        DocumentSessionDTO document = getDocumentSessionDTO(row);
-                        campaign.getDocuments().add(document);
+                    if (campaign == null) {
+                        System.err.println("Failed to create campaign DTO for ID: " + campaignId);
+                        continue;
                     }
+
+                    if (row[11] != null) {
+                        Long donationId = (Long) row[11];
+//                        System.out.println("Processing donation ID: " + donationId + " for campaign ID: " + campaignId);
+                        if (campaign.getDonations().stream().noneMatch(d -> d.getId().equals(donationId))) {
+                            try {
+                                DonationSessionDTO donation = getDonationSessionDTO(row);
+                                campaign.getDonations().add(donation);
+                            } catch (Exception e) {
+                                System.err.println("Error processing donation ID: " + donationId);
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+
+                    if (row[18] != null) {
+                        Long documentId = (Long) row[18];
+//                        System.out.println("Processing document ID: " + documentId + " for campaign ID: " + campaignId);
+                        if (campaign.getDocuments().stream().noneMatch(d -> d.getId().equals(documentId))) {
+                            try {
+                                DocumentSessionDTO document = getDocumentSessionDTO(row);
+                                campaign.getDocuments().add(document);
+                            } catch (Exception e) {
+                                System.err.println("Error processing document ID: " + documentId);
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    System.err.println("Error processing row: " + Arrays.toString(row));
+                    e.printStackTrace();
                 }
             }
 
-            return new ArrayList<>(campaignMap.values());
+            results = new ArrayList<>(campaignMap.values());
+        } catch (Exception e) {
+            System.err.println("Error in getAllCampaignsWithDonations");
+            e.printStackTrace();
         }
+
+        return results;
+    }
 
         private static CampaignWithDonationsDTO getCampaignWithDonationsDTO(Object[] row) {
             CampaignWithDonationsDTO dto = new CampaignWithDonationsDTO();
@@ -278,7 +326,7 @@ public class CampaignService {
             dto.setAmountRaised((Double) row[7]);
             dto.setCreatedAt((LocalDateTime) row[8]);
             dto.setUpdatedAt((LocalDateTime) row[9]);
-            dto.setToBeShown((String) row[10]);
+            dto.setToBeShown((Boolean) row[10]);
             dto.setDonations(new ArrayList<>());
             dto.setDocuments(new ArrayList<>());
             return dto;
@@ -298,16 +346,31 @@ public class CampaignService {
 
     private static DocumentSessionDTO getDocumentSessionDTO(Object[] row) {
         DocumentSessionDTO document = new DocumentSessionDTO();
-        document.setId((Long) row[18]);
-        document.setDoc_type((String) row[19]);
-        document.setDoc_url((String) row[20]);
-        document.setCampaign_id((Long) row[21]);
-        document.setRemarks((String) row[22]);
-        Status status = Status.valueOf((String) row[23]);
-        document.setStatus(status);
-//        document.setStatus((String) row[23]);
-        document.setUpload_date((LocalDate) row[24]);
-        document.setUpload_user((Long) row[25]);
+        try {
+            document.setId((Long) row[18]);
+            document.setDoc_type((String) row[19]);
+            document.setDoc_url((String) row[20]);
+            document.setCampaign_id((Long) row[21]);
+            document.setRemarks((String) row[22]);
+
+            if (row[23] != null) {
+                try {
+//                    String statusStr = (String) row[23];
+//                    Status status = Status.valueOf(statusStr.toUpperCase());
+                    document.setStatus((Status) row[23]);
+                } catch (IllegalArgumentException e) {
+                    System.err.println("Invalid status value: " + row[23]);
+                    e.printStackTrace();
+                    document.setStatus(Status.UNDER_REVIEW); // Default status
+                }
+            }
+
+            document.setUpload_date((LocalDate) row[24]);
+            document.setUpload_user((Long) row[25]);
+        } catch (Exception e) {
+            System.err.println("Error in getDocumentSessionDTO: " + Arrays.toString(row));
+            e.printStackTrace();
+        }
         return document;
     }
 

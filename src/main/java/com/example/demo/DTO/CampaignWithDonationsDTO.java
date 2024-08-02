@@ -28,7 +28,7 @@ public class CampaignWithDonationsDTO {
     private Double amountRaised;
     private LocalDate startDate;
     private LocalDate endDate;
-    private String toBeShown;
+    private Boolean toBeShown;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private List<DonationSessionDTO> donations;
