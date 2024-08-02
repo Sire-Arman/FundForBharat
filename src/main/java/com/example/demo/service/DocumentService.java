@@ -72,6 +72,7 @@ public class DocumentService {
     public Document updateDocument(Long id , DocumentSessionDTO dto){
        try{
            Document dt = documentRepository.findById(id).orElseThrow(()-> new EntityNotFoundException("Document not found with id: " + id));
+           System.out.println("\n\n Insided updateDocument \n");
            if(dt != null){
                dt.setDoc_type(dto.getDoc_type());
                dt.setDoc_url(dto.getDoc_url());
@@ -79,13 +80,23 @@ public class DocumentService {
                dt.setCampaign_id(dto.getCampaign_id());
                dt.setUpload_user(dto.getUpload_user());
                dt.setUpload_date(dto.getUpload_date());
+//               if(dto.getStatus() != null){
+//                   try {
+//                       Status status = Status.valueOf(dto.getStatus().toString().toUpperCase());
+//                       dt.setStatus(status);
+//                   } catch (IllegalArgumentException e) {
+//                       // Handle invalid status string
+//                       throw new IllegalArgumentException("Invalid status value: " + dto.getStatus());
+//                   }
+//               }
                dt.setStatus(dto.getStatus());
                documentRepository.save(dt);
                return dt;
            }
            return null;
 
-       }catch (Exception e){
+       }
+       catch (Exception e){
            System.err.println("Exception while updating doc: " + e.getMessage());
            return null;
        }
@@ -113,18 +124,18 @@ public class DocumentService {
             if (updates.containsKey("upload_user")) {
                 document.setUpload_user(Long.valueOf(updates.get("upload_user").toString()));
             }
-//            if (updates.containsKey("status")) {
-//                try {
-//                    Status status = Status.valueOf(updates.get("status").toString().toUpperCase());
-//                    document.setStatus(status);
-//                } catch (IllegalArgumentException e) {
-//                    // Handle invalid status string
-//                    throw new IllegalArgumentException("Invalid status value: " + updates.get("status"));
-//                }
-//            }
-            if(updates.containsKey("status")){
-                document.setStatus(updates.get("status").toString());
+            if (updates.containsKey("status")) {
+                try {
+                    Status status = Status.valueOf(updates.get("status").toString().toUpperCase());
+                    document.setStatus(status);
+                } catch (IllegalArgumentException e) {
+                    // Handle invalid status string
+                    throw new IllegalArgumentException("Invalid status value: " + updates.get("status"));
+                }
             }
+//            if(updates.containsKey("status")){
+//                document.setStatus(updates.get("status").toString());
+//            }
             if (updates.containsKey("remarks")) {
                 document.setRemarks(updates.get("isPublic").toString());
             }

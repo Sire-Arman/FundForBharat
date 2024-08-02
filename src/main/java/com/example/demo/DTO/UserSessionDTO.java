@@ -1,6 +1,7 @@
 package com.example.demo.DTO;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,7 +14,9 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserSessionDTO {
+    @JsonIgnore
     private Long userId;
+
     private String email;
     private String username;
     private String fullname;

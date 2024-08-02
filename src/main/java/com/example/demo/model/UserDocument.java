@@ -19,11 +19,11 @@ public class UserDocument {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = true)
-    private Long user_id;
+
 
     @Column(nullable = true)
-    private String alias_name;
+    private String alias_name;@Column(nullable = true)
+    private Long user_id;
 
     @Column(nullable = false)
     private String Doc_type;
@@ -31,9 +31,10 @@ public class UserDocument {
     @Column(nullable = false)
     private String Doc_url;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-//    private Status status;
-    private String status;
+    private Status status;
+//    private String status;
     @Column
     private String remarks;
 

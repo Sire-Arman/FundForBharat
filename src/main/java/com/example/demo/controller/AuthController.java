@@ -86,9 +86,9 @@ public class AuthController {
     private List<String> validateUser(UserSessionDTO userDto) {
         List<String> errors = new ArrayList<>();
 
-        if (userDto.getUserId() != null && userDto.getUserId() <= 0) {
-            errors.add("User ID must be a positive number");
-        }
+//        if (userDto.getUserId() != null && userDto.getUserId() <= 0) {
+//            errors.add("User ID must be a positive number");
+//        }
         if (userDto.getEmail() == null || userDto.getEmail().trim().isEmpty()) {
             errors.add("Email is required");
         } else if (!isValidEmail(userDto.getEmail())) {

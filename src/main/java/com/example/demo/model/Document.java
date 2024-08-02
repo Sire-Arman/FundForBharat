@@ -34,9 +34,10 @@ public class Document {
 //    stores userid
     private Long upload_user;
 
-    @Column(nullable = false)
-//    private Status status;
-    private String status;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, name = "status")
+    private Status status;
+//    private String status;
     @Column
     private String remarks;
 

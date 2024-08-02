@@ -20,8 +20,8 @@ public class DocumentSessionDTO {
     private Long campaign_id;
     private LocalDate upload_date;
     private Long upload_user;
-//    private Status status;
-    private String status;
+    private Status status;
+//    private String status;
     private String remarks;
     private String errorMessage;
 

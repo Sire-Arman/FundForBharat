@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.DTO.UserDocumentSessionDTO;
+import com.example.demo.DTO.UserSessionDTO;
 import com.example.demo.model.UserDocument;
 import com.example.demo.repository.UserDocumentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,8 +25,8 @@ public class UserDocumentService {
         try{
             Optional<UserDocument> userDocument = userDocumentRepository.findById(id);
             return userDocument.map(document -> new UserDocumentSessionDTO(document.getId(), document.getUser_id(),
-                    document.getAlias_name(), document.getDoc_type()
-                    , document.getDoc_url(), "Doc Found")).orElseGet(() -> new UserDocumentSessionDTO("Document Not found"));
+                    document.getAlias_name(), document.getDoc_type(), document.getDoc_url(),document.getStatus(),
+                    "Doc Found")).orElseGet(() -> new UserDocumentSessionDTO("Document Not found"));
         }
         catch(Exception e){
             // Handle exceptions (e.g., database connection issues)
@@ -41,20 +42,31 @@ public class UserDocumentService {
         return userDocumentRepository.findByUserId(userId);
     }
 
-
     @Transactional
     public UserDocumentSessionDTO updateDoc(Long id, UserDocumentSessionDTO dto) {
         try {
             Optional<UserDocument> userDocumentOptional = userDocumentRepository.findById(id);
-
-            return userDocumentOptional.map(doc -> {
-                    doc.setDoc_type(dto.getDoc_type());
-                    doc.setDoc_url(dto.getDoc_url());
-                    doc.setUser_id(dto.getUserId());
-                    doc.setAlias_name(dto.getAlias_name());
-                UserDocument savedDoc = userDocumentRepository.save(doc);
-                return convertToDTO(savedDoc);
-            }).orElseThrow(() -> new RuntimeException("Document not found"));
+            UserDocumentSessionDTO updated  = new UserDocumentSessionDTO();
+            if(userDocumentOptional.isPresent()){
+                UserDocument userDocument = userDocumentOptional.get();
+                userDocument.setAlias_name(dto.getAlias_name());
+                userDocument.setDoc_type(dto.getDoc_type());
+                userDocument.setDoc_url(dto.getDoc_url());
+                userDocument.setStatus(dto.getStatus());
+                System.out.println(userDocument.getStatus());
+                updated = convertToDTO(userDocument);
+                userDocumentRepository.save(userDocument);
+            }
+//            return userDocumentOptional.map(doc -> {
+//                    doc.setDoc_type(dto.getDoc_type());
+//                    doc.setDoc_url(dto.getDoc_url());
+//                    doc.setUser_id(dto.getUserId());
+//                    doc.setStatus(dto.getStatus());
+//                    doc.setAlias_name(dto.getAlias_name());
+//                UserDocument savedDoc = userDocumentRepository.save(doc);
+//                return convertToDTO(savedDoc);
+//            }).orElseThrow(() -> new RuntimeException("Document not found"));
+            return updated;
         }
         catch (Exception e) {
             System.err.println("Exception while updating document: " + e.getMessage());
@@ -80,6 +92,9 @@ public class UserDocumentService {
                 }
                 if (dto.getAlias_name() != null) {
                     doc.setAlias_name(dto.getAlias_name());
+                }
+                if(!dto.getStatus().equals(null)){
+                    doc.setStatus(dto.getStatus());
                 }
                 UserDocument savedDoc = userDocumentRepository.save(doc);
                 return convertToDTO(savedDoc);
@@ -118,6 +133,7 @@ public class UserDocumentService {
         dto.setDoc_type(doc.getDoc_type());
         dto.setDoc_url(doc.getDoc_url());
         dto.setUserId(doc.getUser_id());
+        dto.setStatus(doc.getStatus());
         dto.setAlias_name(doc.getAlias_name());
         return dto;
     }

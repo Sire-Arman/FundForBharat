@@ -117,16 +117,22 @@ public class CampaignService {
      */
     @Transactional
     public Optional<Campaign> updateCampaign(Long id, CampaignSessionDTO campaignDTO) {
-        return campaignRepository.findById(id)
-                .map(campaign -> {
-                    campaign.setTitle(campaignDTO.getTitle());
-                    campaign.setDescription(campaignDTO.getDescription());
-                    campaign.setTarget_amount(campaignDTO.getTarget_amount());
-                    campaign.setStart_date(campaignDTO.getStartDate());
-                    campaign.setEnd_date(campaignDTO.getEndDate());
-                    campaign.setUser_id(campaignDTO.getUserId());
-                    return campaignRepository.save(campaign);
-                });
+        Optional<Campaign> cmpOpt = campaignRepository.findCampaignById(id);
+        Campaign updated = new Campaign();
+        if(cmpOpt.isPresent()) {
+            Campaign campaign = cmpOpt.get();
+            campaign.setTitle(campaignDTO.getTitle());
+            campaign.setDescription(campaignDTO.getDescription());
+            campaign.setTarget_amount(campaignDTO.getTarget_amount());
+            System.out.println(campaignDTO.getStartDate());
+            campaign.setStart_date(campaignDTO.getStartDate());
+            campaign.setEnd_date(campaignDTO.getEndDate());
+            campaign.setUser_id(campaignDTO.getUserId());
+            updated = campaign;
+
+            campaignRepository.save(campaign);
+        }
+        return Optional.of(updated);
     }
 
     /**
@@ -297,9 +303,9 @@ public class CampaignService {
         document.setDoc_url((String) row[20]);
         document.setCampaign_id((Long) row[21]);
         document.setRemarks((String) row[22]);
-//        Status status = Status.valueOf(((String) row[23]).toUpperCase());
-//        document.setStatus(status);
-        document.setStatus((String) row[23]);
+        Status status = Status.valueOf((String) row[23]);
+        document.setStatus(status);
+//        document.setStatus((String) row[23]);
         document.setUpload_date((LocalDate) row[24]);
         document.setUpload_user((Long) row[25]);
         return document;

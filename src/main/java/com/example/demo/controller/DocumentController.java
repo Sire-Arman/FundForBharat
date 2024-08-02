@@ -61,9 +61,14 @@ public class DocumentController {
         }
         try {
             // Attempt to find the document by ID
-            return documentService.findById(id)
-                    .map(ResponseEntity::ok)
-                    .orElse(ResponseEntity.notFound().build());
+            Optional<Document> doc = documentService.findById(id);
+            if(doc.isPresent()) {
+                return ResponseEntity.status(HttpStatus.OK).body(doc.get());
+            }
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No document found ");
+//            return documentService.findById(id)
+//                    .map(ResponseEntity::ok)
+//                    .orElse(ResponseEntity.notFound().build());
         } catch (IllegalArgumentException e) {
             // Handle invalid ID input
             return ResponseEntity.badRequest().body("Invalid document ID: " + e.getMessage());
@@ -128,20 +133,21 @@ public class DocumentController {
     }
     @PutMapping
     public ResponseEntity<?> updateDoc(@RequestParam Long id, @RequestBody DocumentSessionDTO dto) {
+        System.out.println("\n\n Insided updateDocument \n");
         if(dto == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("data is mandatory");
         }
 
-        List<String> errors = validateDocument(dto);
-        if(!errors.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
-        }
+//        List<String> errors = validateDocument(dto);
+//        if(!errors.isEmpty()) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+//        }
         try{
             Document dt = documentService.updateDocument(id,dto);
             if(dt != null) {
                 return ResponseEntity.ok(dt);
             }
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Nothing found");
 
 
         }
@@ -217,18 +223,18 @@ public class DocumentController {
         if (documentDto.getUpload_user() == null || documentDto.getUpload_user() <= 0) {
             errors.add("Upload user ID must be a positive number");
         }
-        if(documentDto.getStatus() == "null" ){
-            errors.add("Status is required");
-        }
-//        if (documentDto.getStatus() == null) {
+//        if(documentDto.getStatus() == "null" ){
 //            errors.add("Status is required");
-//        } else {
-//            try {
-//                Status.valueOf(documentDto.getStatus().toString());
-//            } catch (IllegalArgumentException e) {
-//                errors.add("Invalid status value: " + documentDto.getStatus());
-//            }
 //        }
+        if (documentDto.getStatus() == null) {
+            errors.add("Status is required");
+        } else {
+            try {
+                Status.valueOf(documentDto.getStatus().toString());
+            } catch (IllegalArgumentException e) {
+                errors.add("Invalid status value: " + documentDto.getStatus());
+            }
+        }
         // Remarks and errorMessage can be null or empty, so we don't validate them
 //        validateDate(documentDto.getUpload_date(), "Upload_date",false,errors);
         return errors;

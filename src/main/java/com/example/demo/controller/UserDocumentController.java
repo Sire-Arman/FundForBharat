@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.DTO.DocumentSessionDTO;
 import com.example.demo.DTO.UserDocumentSessionDTO;
+import com.example.demo.model.Status;
 import com.example.demo.model.UserDocument;
 import com.example.demo.service.UserDocumentService;
 import jakarta.persistence.EntityNotFoundException;
@@ -116,11 +117,20 @@ public class UserDocumentController {
         if (documentDto.getId() != null && documentDto.getId() <= 0) {
             errors.add("ID must be a positive number");
         }
-        if (documentDto.getUserId() == null || documentDto.getUserId() <= 0) {
-            errors.add("User ID is required and must be a positive number");
-        }
+//        if (documentDto.getUserId() == null || documentDto.getUserId() <= 0) {
+//            errors.add("User ID is required and must be a positive number");
+//        }
         if (documentDto.getAlias_name() == null || documentDto.getAlias_name().trim().isEmpty()) {
             errors.add("Alias name is required");
+        }
+        if (documentDto.getStatus() == null) {
+            errors.add("Status is required");
+        } else {
+            try {
+                Status.valueOf(documentDto.getStatus().toString());
+            } catch (IllegalArgumentException e) {
+                errors.add("Invalid status value: " + documentDto.getStatus());
+            }
         }
         if (documentDto.getDoc_type() == null || documentDto.getDoc_type().trim().isEmpty()) {
             errors.add("Document type is required");
