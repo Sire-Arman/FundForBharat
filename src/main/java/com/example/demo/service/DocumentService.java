@@ -36,7 +36,7 @@ public class DocumentService {
     @Transactional
     public Optional<DocumentSessionDTO> findByUserId(Long user_id) {
         try {
-            Optional<Document> documentOptional = documentRepository.findByUserId(user_id);
+            Optional<Document> documentOptional = documentRepository.findByUploadUser(user_id);
             if (documentOptional.isEmpty()) {
                 return Optional.of(new DocumentSessionDTO("No doc found"));
             }

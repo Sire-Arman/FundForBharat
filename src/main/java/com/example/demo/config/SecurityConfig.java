@@ -44,6 +44,7 @@ public class SecurityConfig {
                 .cors(withDefaults())
                 .authorizeHttpRequests(req -> req
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/**").hasAuthority("SUPER_ADMIN")
                         .requestMatchers("/api/users/**").hasAnyAuthority("USER", "CAMPAIGN_ADMIN", "DOCUMENT_ADMIN", "PAYMENT_ADMIN")
                         .requestMatchers("/api/admins/campaigns").hasAuthority("CAMPAIGN_ADMIN")
                         .requestMatchers("/api/admins/document").hasAuthority("DOCUMENT_ADMIN")

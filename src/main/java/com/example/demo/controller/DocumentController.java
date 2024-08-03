@@ -66,12 +66,9 @@ public class DocumentController {
                 return ResponseEntity.status(HttpStatus.OK).body(doc.get());
             }
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No document found ");
-//            return documentService.findById(id)
-//                    .map(ResponseEntity::ok)
-//                    .orElse(ResponseEntity.notFound().build());
-        } catch (IllegalArgumentException e) {
-            // Handle invalid ID input
-            return ResponseEntity.badRequest().body("Invalid document ID: " + e.getMessage());
+//        } catch (IllegalArgumentException e) {
+//            // Handle invalid ID input
+//            return ResponseEntity.badRequest().body("Invalid document ID: " + e.getMessage());
         } catch (Exception e) {
             // Handle any other unexpected errors
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -85,10 +82,13 @@ public class DocumentController {
         }
         try {
             Optional<DocumentSessionDTO> documentSessionDTO = documentService.findByUserId(userId);
-            if (documentSessionDTO.isEmpty() || documentSessionDTO.get().getErrorMessage() != null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No document found for the given user ID");
+//            if (documentSessionDTO.isEmpty() || documentSessionDTO.get().getErrorMessage() != null) {
+//                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No document found for the given user ID");
+//            }
+            if(documentSessionDTO.isPresent()) {
+                return ResponseEntity.status(HttpStatus.OK).body(documentSessionDTO.get());
             }
-            return ResponseEntity.ok(documentSessionDTO.get());
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No document found ");
         } catch (Exception e) {
             System.err.println("Exception while getting document: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while retrieving the document");
