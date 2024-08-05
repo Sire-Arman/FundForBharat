@@ -107,24 +107,24 @@ public class UserDocumentService {
     }
 
 
-    @Transactional
-    public UserDocumentSessionDTO deleteDoc(Long id) {
-        try {
-            Optional<UserDocument> userDocumentOptional = userDocumentRepository.findById(id);
-
-            if (userDocumentOptional.isPresent()) {
-                UserDocument userDocument = userDocumentOptional.get();
-                UserDocumentSessionDTO dto = convertToDTO(userDocument);
-                userDocumentRepository.deleteById(id);
-                return dto;
-            } else {
-                throw new RuntimeException("Document not found with id: " + id);
-            }
-        } catch (Exception e) {
-            System.err.println("Exception while deleting document: " + e.getMessage());
-            return new UserDocumentSessionDTO("Error deleting User document: " + e.getMessage());
-        }
-    }
+//    @Transactional
+//    public UserDocumentSessionDTO deleteDoc(Long id) {
+//        try {
+//            Optional<UserDocument> userDocumentOptional = userDocumentRepository.findById(id);
+//
+//            if (userDocumentOptional.isPresent()) {
+//                UserDocument userDocument = userDocumentOptional.get();
+//                UserDocumentSessionDTO dto = convertToDTO(userDocument);
+//                userDocumentRepository.deleteById(id);
+//                return dto;
+//            } else {
+//                throw new RuntimeException("Document not found with id: " + id);
+//            }
+//        } catch (Exception e) {
+//            System.err.println("Exception while deleting document: " + e.getMessage());
+//            return new UserDocumentSessionDTO("Error deleting User document: " + e.getMessage());
+//        }
+//    }
 
 
     private UserDocumentSessionDTO convertToDTO(UserDocument doc) {

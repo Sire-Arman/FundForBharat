@@ -111,50 +111,50 @@ public class DonationService {
     }
 
 
-    @Transactional
-    public Donation updateDonation(Long id, DonationSessionDTO dto) {
-        return donationRepository.findById(id)
-                .map(donation -> {
-                    donation.setUser_id(dto.getUser_id());
-                    donation.setCampaign_id(dto.getCampaign_id());
-                    donation.setMode_of_payment(dto.getModeOfPayment());
-                    donation.setAlias_name(dto.getAlias_name());
-                    donation.setAmount(dto.getAmount());
-                    donation.setDonation_date(dto.getDonation_date());
-                    return donationRepository.save(donation);
-                })
-                .orElseThrow(() -> new EntityNotFoundException("Donation not found with id: " + id));
-    }
+//    @Transactional
+//    public Donation updateDonation(Long id, DonationSessionDTO dto) {
+//        return donationRepository.findById(id)
+//                .map(donation -> {
+//                    donation.setUser_id(dto.getUser_id());
+//                    donation.setCampaign_id(dto.getCampaign_id());
+//                    donation.setMode_of_payment(dto.getModeOfPayment());
+//                    donation.setAlias_name(dto.getAlias_name());
+//                    donation.setAmount(dto.getAmount());
+//                    donation.setDonation_date(dto.getDonation_date());
+//                    return donationRepository.save(donation);
+//                })
+//                .orElseThrow(() -> new EntityNotFoundException("Donation not found with id: " + id));
+//    }
 
-
-    @Transactional
-    public Boolean deleteById(Long id,Boolean AmountToBeReduced) {
-        try {
-            Optional<Donation> optionalDonation = donationRepository.findById(id);
-
-            if (optionalDonation.isPresent()) {
-                Donation donation = optionalDonation.get();
-                if(AmountToBeReduced){
-                    Long campaignId = donation.getCampaign_id();
-                    Campaign campaign = campaignRepository.findById(campaignId)
-                            .orElseThrow(() -> new EntityNotFoundException("Campaign not found"));
-
-                    Double newAmount = campaign.getAmount_raised() - donation.getAmount();
-                    campaign.setAmount_raised(newAmount);
-                    campaignRepository.save(campaign);
-
-                }
-                // First, update the campaign's amount_raised
-
-                // Then, delete the donation
-                donationRepository.deleteById(id);
-                return true;
-            } else {
-                return false;
-            }
-        } catch (Exception e) {
-            return false;
-        }
-    }
+//
+//    @Transactional
+//    public Boolean deleteById(Long id,Boolean AmountToBeReduced) {
+//        try {
+//            Optional<Donation> optionalDonation = donationRepository.findById(id);
+//
+//            if (optionalDonation.isPresent()) {
+//                Donation donation = optionalDonation.get();
+//                if(AmountToBeReduced){
+//                    Long campaignId = donation.getCampaign_id();
+//                    Campaign campaign = campaignRepository.findById(campaignId)
+//                            .orElseThrow(() -> new EntityNotFoundException("Campaign not found"));
+//
+//                    Double newAmount = campaign.getAmount_raised() - donation.getAmount();
+//                    campaign.setAmount_raised(newAmount);
+//                    campaignRepository.save(campaign);
+//
+//                }
+//                // First, update the campaign's amount_raised
+//
+//                // Then, delete the donation
+//                donationRepository.deleteById(id);
+//                return true;
+//            } else {
+//                return false;
+//            }
+//        } catch (Exception e) {
+//            return false;
+//        }
+//    }
 
 }

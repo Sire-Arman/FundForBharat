@@ -115,6 +115,7 @@ public class DonationController {
     }
 
     //    Add donation
+//    inter server call will be required for this
     @PostMapping("/add-donation")
     public ResponseEntity<?> addDonation(@RequestBody DonationSessionDTO dto) {
         List<String> errors = validateDTO(dto);
@@ -136,14 +137,14 @@ public class DonationController {
 
             boolean amountAdded = campaignService.addDonationAmount(campaignId, donationAmount);
 
-            if (!amountAdded) {
-                // If adding amount to campaign failed, rollback the donation creation
-                boolean deleted = donationService.deleteById(createdDonation.getId(), false);
-                if (!deleted) {
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to rollback donation creation after campaign update failure.");
-                }
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Campaign not found. Donation not added.");
-            }
+//            if (!amountAdded) {
+//                // If adding amount to campaign failed, rollback the donation creation
+//                boolean deleted = donationService.deleteById(createdDonation.getId(), false);
+//                if (!deleted) {
+//                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to rollback donation creation after campaign update failure.");
+//                }
+//                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Campaign not found. Donation not added.");
+//            }
 
             return ResponseEntity.status(HttpStatus.CREATED).body("Donation added successfully: " + createdDonation);
 
@@ -156,54 +157,54 @@ public class DonationController {
         }
     }
 
-    @PutMapping("/update-donation")
-    public ResponseEntity<?> updateDonation(@RequestParam Long id, @RequestBody DonationSessionDTO dto) {
+//    @PutMapping("/update-donation")
+//    public ResponseEntity<?> updateDonation(@RequestParam Long id, @RequestBody DonationSessionDTO dto) {
+//
+//        List<String> errors = validateDTO(dto);
+//        if (!errors.isEmpty()) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+//        }
+//        try {
+//            // Validate input data (you can add more validation if needed)
+//            if (dto.equals(null)) {
+//                throw new IllegalArgumentException("Donation ID and update data must be provided.");
+//            }
+//
+//            Donation updatedDonation = donationService.updateDonation(id, dto);
+//            return ResponseEntity.ok(updatedDonation);
+//        } catch (EntityNotFoundException e) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Donation with id " + id + " not found");
+//        } catch (IllegalArgumentException e) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid donation data: " + e.getMessage());
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while updating the donation: " + e.getMessage());
+//        }
+//    }
 
-        List<String> errors = validateDTO(dto);
-        if (!errors.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
-        }
-        try {
-            // Validate input data (you can add more validation if needed)
-            if (dto.equals(null)) {
-                throw new IllegalArgumentException("Donation ID and update data must be provided.");
-            }
-
-            Donation updatedDonation = donationService.updateDonation(id, dto);
-            return ResponseEntity.ok(updatedDonation);
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Donation with id " + id + " not found");
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid donation data: " + e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while updating the donation: " + e.getMessage());
-        }
-    }
-
-    @DeleteMapping("/delete-donation")
-    public ResponseEntity<?> deleteDonation(@RequestParam Long id, @RequestParam(defaultValue = "true") Boolean AmountToBeReduced) {
-        if(id.equals(null)){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid input parameters");
-        }
-        try {
-            // Validate input data (you can add more validation if needed)
-            if (id == null) {
-                throw new IllegalArgumentException("Donation ID must be provided.");
-            }
-
-            boolean deleted = donationService.deleteById(id, AmountToBeReduced);
-
-            if (deleted) {
-                return ResponseEntity.ok("Donation with id " + id + " deleted successfully");
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Donation with id " + id + " not found");
-            }
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid donation data: " + e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while deleting the donation: " + e.getMessage());
-        }
-    }
+//    @DeleteMapping("/delete-donation")
+//    public ResponseEntity<?> deleteDonation(@RequestParam Long id, @RequestParam(defaultValue = "true") Boolean AmountToBeReduced) {
+//        if(id.equals(null)){
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid input parameters");
+//        }
+//        try {
+//            // Validate input data (you can add more validation if needed)
+//            if (id == null) {
+//                throw new IllegalArgumentException("Donation ID must be provided.");
+//            }
+//
+//            boolean deleted = donationService.deleteById(id, AmountToBeReduced);
+//
+//            if (deleted) {
+//                return ResponseEntity.ok("Donation with id " + id + " deleted successfully");
+//            } else {
+//                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Donation with id " + id + " not found");
+//            }
+//        } catch (IllegalArgumentException e) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid donation data: " + e.getMessage());
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while deleting the donation: " + e.getMessage());
+//        }
+//    }
 
     private List<String> validateDTO(DonationSessionDTO donationDto) {
         List<String> errors = new ArrayList<>();

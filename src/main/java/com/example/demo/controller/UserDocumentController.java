@@ -79,22 +79,24 @@ public class UserDocumentController {
         }
     }
 
-    @DeleteMapping
-    public ResponseEntity<?> deleteDocById(@RequestParam Long id) {
-        if(id.equals(null)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("id is required");
-        }
-        try{
-            UserDocumentSessionDTO deletedDoc = userDocumentService.deleteDoc(id);
-            if(deletedDoc == null) {
-                return ResponseEntity.ok("Cannot delete user document as there is no document with this id");
-            }
-            return ResponseEntity.ok(deletedDoc);
-        }catch (Exception e) {
-//            System.err.println("Error deleting user document: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
+//    @DeleteMapping
+//    public ResponseEntity<?> deleteDocById(@RequestParam Long id) {
+//        if(id.equals(null)) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("id is required");
+//        }
+//        try{
+//            UserDocumentSessionDTO deletedDoc = userDocumentService.deleteDoc(id);
+//            if(deletedDoc == null) {
+//                return ResponseEntity.ok("Cannot delete user document as there is no document with this id");
+//            }
+//            return ResponseEntity.ok(deletedDoc);
+//        }catch (Exception e) {
+////            System.err.println("Error deleting user document: " + e.getMessage());
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+//        }
+//    }
+//
+
     @GetMapping("/get-by-userId")
     public ResponseEntity<?> getDocByUserId(@RequestParam Long userId) {
         if(userId == null) {

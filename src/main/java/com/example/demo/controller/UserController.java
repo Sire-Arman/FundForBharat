@@ -21,6 +21,7 @@ public class UserController {
         this.userServices = userServices;
     }
 
+//    we will be using this for get user by id and sending details
     @GetMapping("/get-user")
     public ResponseEntity<UserSessionDTO> getUser(@RequestBody UserSessionDTO user) {
 

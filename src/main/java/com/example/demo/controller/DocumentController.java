@@ -33,6 +33,7 @@ public class DocumentController {
         this.documentService = documentService;
         this.campaignService = campaignService;
     }
+
     @GetMapping("/get-all")
     public ResponseEntity<?> getAllDocuments() {
         try {
@@ -110,161 +111,169 @@ public class DocumentController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-    @PostMapping("/add-doc")
-    public ResponseEntity<?> addDoc(@RequestBody DocumentSessionDTO dto) {
-        if(dto.equals(null)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("data is mandatory");
-        }
-        List<String> errors = validateDocument(dto);
-        if(!errors.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
-        }
-        try {
-
-            Document dt = documentService.addDocument(dto);
-            if(dt != null) {
-                return ResponseEntity.ok(dt);
-            }
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
-
-        }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-    @PutMapping
-    public ResponseEntity<?> updateDoc(@RequestParam Long id, @RequestBody DocumentSessionDTO dto) {
-        System.out.println("\n\n Insided updateDocument \n");
-        if(dto == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("data is mandatory");
-        }
-
+//    @PostMapping("/add-doc")
+//    public ResponseEntity<?> addDoc(@RequestBody DocumentSessionDTO dto) {
+//        if(dto.equals(null)) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("data is mandatory");
+//        }
 //        List<String> errors = validateDocument(dto);
 //        if(!errors.isEmpty()) {
 //            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
 //        }
-        try{
-            Document dt = documentService.updateDocument(id,dto);
-            if(dt != null) {
-                return ResponseEntity.ok(dt);
-            }
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Nothing found");
-
-
-        }
-        catch (Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-    @PatchMapping()
-    public ResponseEntity<?> patchDoc(@RequestParam Long id, @RequestBody Map<String, Object> updates) {
-        if(updates == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("data is mandatory");
-        }
-        List<String> errors = validateDocument(id);
-        if(!errors.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
-        }
-        try {
-            Optional<Document> patchedDocument = documentService.partialUpdateDocument(id, updates);
-            return patchedDocument.map(document -> ResponseEntity.ok("Updated Document with id " + id + "\n" + document)).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Document not patched with id: " + id));
-        }catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body("Invalid document ID: " + e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("An error occurred while deleting the document: " + e.getMessage());
-        }
-    }
-    @DeleteMapping
-    public ResponseEntity<?> deleteDoc(@RequestParam Long id) {
-        List<String> errors = validateDocument(id);
-        if(!errors.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
-        }
-        try {
-            Optional<Document> documentOptional = documentService.findById(id);
-            if (documentOptional.isPresent()) {
-                Document document = documentOptional.get();
-                boolean deleted = documentService.deleteDocument(id);
-                if (deleted) {
-                    return ResponseEntity.ok(document);
-                } else {
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                            .body("Failed to delete document with id: " + id);
-                }
-            } else {
-                return ResponseEntity.notFound().build();
-            }
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body("Invalid document ID: " + e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("An error occurred while deleting the document: " + e.getMessage());
-        }
-    }
-    private List<String> validateDocument(DocumentSessionDTO documentDto) {
-        List<String> errors = new ArrayList<>();
-
-        if (documentDto.getId() != null && documentDto.getId() <= 0) {
-            errors.add("ID must be a positive number");
-        }
-        if (documentDto.getDoc_type() == null || documentDto.getDoc_type().trim().isEmpty()) {
-            errors.add("Document type is required");
-        }
-        if (documentDto.getDoc_url() == null || documentDto.getDoc_url().trim().isEmpty()) {
-            errors.add("Document URL is required");
-        }
-        if (documentDto.getCampaign_id() == null || documentDto.getCampaign_id() <= 0) {
-            errors.add("Campaign ID must be a positive number");
-        }
-        if (documentDto.getUpload_date() == null || documentDto.getUpload_date().isAfter(LocalDate.now())) {
-            errors.add("Upload date must be a valid date not in the future");
-        }
-        if (documentDto.getUpload_user() == null || documentDto.getUpload_user() <= 0) {
-            errors.add("Upload user ID must be a positive number");
-        }
-//        if(documentDto.getStatus() == "null" ){
-//            errors.add("Status is required");
+//        try {
+//
+//            Document dt = documentService.addDocument(dto);
+//            if(dt != null) {
+//                return ResponseEntity.ok(dt);
+//            }
+//            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
+//
+//        }catch (Exception e){
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 //        }
-        if (documentDto.getStatus() == null) {
-            errors.add("Status is required");
-        } else {
-            try {
-                Status.valueOf(documentDto.getStatus().toString());
-            } catch (IllegalArgumentException e) {
-                errors.add("Invalid status value: " + documentDto.getStatus());
-            }
-        }
-        // Remarks and errorMessage can be null or empty, so we don't validate them
-//        validateDate(documentDto.getUpload_date(), "Upload_date",false,errors);
-        return errors;
-    }
-    private void validateDate(Function<LocalDate,String> dateGetter, String fieldName, Boolean allowNull, List<String> errors) {
-        String dateStr = dateGetter.apply(null);
-        if (dateStr == null || dateStr.trim().isEmpty()) {
-            if (!allowNull) {
-                errors.add(fieldName + " is required");
-            }
-            return;
-        }
+//    }
+//    @PutMapping
+//    public ResponseEntity<?> updateDoc(@RequestParam Long id, @RequestBody DocumentSessionDTO dto) {
+//        System.out.println("\n\n Insided updateDocument \n");
+//        if(dto == null) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("data is mandatory");
+//        }
+//
+////        List<String> errors = validateDocument(dto);
+////        if(!errors.isEmpty()) {
+////            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+////        }
+//        try{
+//            Document dt = documentService.updateDocument(id,dto);
+//            if(dt != null) {
+//                return ResponseEntity.ok(dt);
+//            }
+//            return ResponseEntity.status(HttpStatus.CONFLICT).body("Nothing found");
+//
+//
+//        }
+//        catch (Exception e){
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+//        }
+//    }
 
-        try {
-            LocalDate date = LocalDate.parse(dateStr, DateTimeFormatter.ISO_DATE);
-            if (date.isAfter(LocalDate.now())) {
-                errors.add(fieldName + " must not be in the future");
-            }
-        } catch (DateTimeParseException e) {
-            errors.add("Invalid date format for " + fieldName + ". Use YYYY-MM-DD format");
-        }
-    }
-    private List<String> validateDocument(Long id) {
-        List<String> errors = new ArrayList<>();
-        if (id == null || id <= 0) {
-            errors.add("ID must be a positive number");
-        }
-        if(documentService.findById(id).isEmpty()) {
-            errors.add("Document with id " + id + " not found");
-        }
-        return errors;
-    }
+
+//    @PatchMapping()
+//    public ResponseEntity<?> patchDoc(@RequestParam Long id, @RequestBody Map<String, Object> updates) {
+//        if(updates == null) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("data is mandatory");
+//        }
+//        List<String> errors = validateDocument(id);
+//        if(!errors.isEmpty()) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+//        }
+//        try {
+//            Optional<Document> patchedDocument = documentService.partialUpdateDocument(id, updates);
+//            return patchedDocument.map(document -> ResponseEntity.ok("Updated Document with id " + id + "\n" + document)).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
+//                    .body("Document not patched with id: " + id));
+//        }catch (IllegalArgumentException e) {
+//            return ResponseEntity.badRequest().body("Invalid document ID: " + e.getMessage());
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                    .body("An error occurred while deleting the document: " + e.getMessage());
+//        }
+//    }
+//    @DeleteMapping
+//    public ResponseEntity<?> deleteDoc(@RequestParam Long id) {
+//        List<String> errors = validateDocument(id);
+//        if(!errors.isEmpty()) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+//        }
+//        try {
+//            Optional<Document> documentOptional = documentService.findById(id);
+//            if (documentOptional.isPresent()) {
+//                Document document = documentOptional.get();
+//                boolean deleted = documentService.deleteDocument(id);
+//                if (deleted) {
+//                    return ResponseEntity.ok(document);
+//                } else {
+//                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                            .body("Failed to delete document with id: " + id);
+//                }
+//            } else {
+//                return ResponseEntity.notFound().build();
+//            }
+//        } catch (IllegalArgumentException e) {
+//            return ResponseEntity.badRequest().body("Invalid document ID: " + e.getMessage());
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                    .body("An error occurred while deleting the document: " + e.getMessage());
+//        }
+//    }
+
+
+//    private List<String> validateDocument(DocumentSessionDTO documentDto) {
+//        List<String> errors = new ArrayList<>();
+//
+//        if (documentDto.getId() != null && documentDto.getId() <= 0) {
+//            errors.add("ID must be a positive number");
+//        }
+//        if (documentDto.getDoc_type() == null || documentDto.getDoc_type().trim().isEmpty()) {
+//            errors.add("Document type is required");
+//        }
+//        if (documentDto.getDoc_url() == null || documentDto.getDoc_url().trim().isEmpty()) {
+//            errors.add("Document URL is required");
+//        }
+//        if (documentDto.getCampaign_id() == null || documentDto.getCampaign_id() <= 0) {
+//            errors.add("Campaign ID must be a positive number");
+//        }
+//        if (documentDto.getUpload_date() == null || documentDto.getUpload_date().isAfter(LocalDate.now())) {
+//            errors.add("Upload date must be a valid date not in the future");
+//        }
+//        if (documentDto.getUpload_user() == null || documentDto.getUpload_user() <= 0) {
+//            errors.add("Upload user ID must be a positive number");
+//        }
+////        if(documentDto.getStatus() == "null" ){
+////            errors.add("Status is required");
+////        }
+//        if (documentDto.getStatus() == null) {
+//            errors.add("Status is required");
+//        } else {
+//            try {
+//                Status.valueOf(documentDto.getStatus().toString());
+//            } catch (IllegalArgumentException e) {
+//                errors.add("Invalid status value: " + documentDto.getStatus());
+//            }
+//        }
+//        // Remarks and errorMessage can be null or empty, so we don't validate them
+////        validateDate(documentDto.getUpload_date(), "Upload_date",false,errors);
+//        return errors;
+//    }
+//
+//
+//    private void validateDate(Function<LocalDate,String> dateGetter, String fieldName, Boolean allowNull, List<String> errors) {
+//        String dateStr = dateGetter.apply(null);
+//        if (dateStr == null || dateStr.trim().isEmpty()) {
+//            if (!allowNull) {
+//                errors.add(fieldName + " is required");
+//            }
+//            return;
+//        }
+//
+//        try {
+//            LocalDate date = LocalDate.parse(dateStr, DateTimeFormatter.ISO_DATE);
+//            if (date.isAfter(LocalDate.now())) {
+//                errors.add(fieldName + " must not be in the future");
+//            }
+//        } catch (DateTimeParseException e) {
+//            errors.add("Invalid date format for " + fieldName + ". Use YYYY-MM-DD format");
+//        }
+//    }
+//
+//
+//    private List<String> validateDocument(Long id) {
+//        List<String> errors = new ArrayList<>();
+//        if (id == null || id <= 0) {
+//            errors.add("ID must be a positive number");
+//        }
+//        if(documentService.findById(id).isEmpty()) {
+//            errors.add("Document with id " + id + " not found");
+//        }
+//        return errors;
+//    }
 }
