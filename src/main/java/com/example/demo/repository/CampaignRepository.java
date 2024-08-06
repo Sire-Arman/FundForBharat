@@ -42,7 +42,8 @@ public interface CampaignRepository extends JpaRepository<Campaign, Long> {
             "doc.id, doc.Doc_type, doc.Doc_url, doc.campaign_id, doc.remarks, doc.status, doc.upload_date, doc.upload_user " +
             "FROM Campaign c " +
             "LEFT JOIN Donation d on d.campaign_id = c.id " +
-            "LEFT JOIN Document doc on doc.campaign_id = c.id ")
+            "LEFT JOIN Document doc on doc.campaign_id = c.id "+
+            "Where c.toBeShown = true")
     List<Object[]> findAllCampaignsWithDonationsAndDocuments();
 
     @Query("SELECT c.id, c.user_id, c.title, c.description, c.start_date, c.end_date, " +

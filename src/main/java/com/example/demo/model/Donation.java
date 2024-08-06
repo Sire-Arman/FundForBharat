@@ -33,7 +33,7 @@ public class Donation {
     private Double amount;
 
     @Column(nullable = false)
-//    private Enum<> mode_of_payment;
+    @Enumerated(EnumType.STRING)
     private PaymentMode mode_of_payment;
 
     @Column(nullable = false)

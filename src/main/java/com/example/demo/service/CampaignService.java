@@ -190,8 +190,8 @@ public class CampaignService {
      * @return List
      */
     @Transactional
-    public List<CampaignWithDonationsDTO> getHomePageCampaigns(){
-        return campaignRepository.findHomePageCampaigns();
+    public List<Object[]> getHomePageCampaigns(){
+        return campaignRepository.findAllCampaignsWithDonationsAndDocuments();
     }
 
     /**

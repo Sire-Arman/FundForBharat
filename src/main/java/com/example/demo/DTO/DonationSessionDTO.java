@@ -27,6 +27,8 @@ public class DonationSessionDTO {
     private LocalDate donation_date;
     private PaymentMode modeOfPayment;
     private String errorMessage;
+    private  String fullname;
+    private String email;
 //   add custom messages or remarks
 //    two donate buttons : one for specific campaigns and one for generic purpose
     public DonationSessionDTO(String errorMessage) {

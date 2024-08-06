@@ -80,7 +80,7 @@ public class DonationController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid input parameters");
         }
         try {
-            Optional<List<Donation>> optionalDonations = donationService.getDonationsByUserId(userId);
+            Optional<List<DonationSessionDTO>> optionalDonations = donationService.getDonationsByUserId(userId);
             if (optionalDonations.isPresent() && !optionalDonations.get().isEmpty()) {
                 return ResponseEntity.ok(optionalDonations.get());
             } else {

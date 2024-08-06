@@ -45,26 +45,7 @@ public class UserService {
             user.setPassword(passwordEncoder.encode(request.getPassword()));
 
             Role role = new Role();
-
-            for (String value : request.getRoles()) {
-                    String x = value.toLowerCase();
-                if (x.equals("user")) {
-                    role.setRoleUser(true);
-                }
-                if (x.equals("campaignadmin")) {
-                    role.setRoleCampaignAdmin(true);
-                }
-                if (x.equals("documentadmin")) {
-                    role.setRoleDocumentAdmin(true);
-                }
-                if (x.equals("paymentadmin")) {
-                    role.setRolePaymentAdmin(true);
-                }
-                if (x.equals("superadmin")) {
-                    role.setRoleSuperAdmin(true);
-                }
-            }
-
+            role.setRoleUser(true);
             role.setUser(user);
             user.setRole(role);
             user = userRepository.save(user);
@@ -91,7 +72,7 @@ public class UserService {
 
             // Fetch user details
             User user = userRepository.findByEmail(request.getEmail());
-//            System.out.println("THis is : ========================="+user);
+            System.out.println("THis is : ========================="+user);
             Role role = user.getRole();
 
             // Generate JWT token
@@ -100,14 +81,18 @@ public class UserService {
             // Return DTO with user and token
             return new UserSessionDTO(user.getId(), user.getEmail(), user.getUsername(), user.getFullName(), null,"",token,role.getAllRoles());
         } catch (Exception e) {
-            // Handle authentication failure
-            System.out.println(e.getCause() + "======="+ e.getMessage());
             return new UserSessionDTO("Invalid Credentials!!");
         }
     }
     @Transactional
-    public Boolean UserExists(String email) {
+    public Boolean UserEmailExists(String email) {
         User user = userRepository.findByEmail(email);
+        return user != null;
+    }
+
+    @Transactional
+    public Boolean UserUsernameExists(String username) {
+        User user = userRepository.findByUsername(username);
         return user != null;
     }
 

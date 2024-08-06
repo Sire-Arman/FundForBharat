@@ -11,20 +11,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.AccessDeniedException;
 import java.util.*;
-//ToDo
-//Handle 400 series errors in each controller before calling services
-//add comments where ever possible
-//export to fundraiser grp(Monday) - pending
-
-// ----------------------------- //
-//first step is jwt generation-done
-//Add campaign document in the response of get-campaigns-done
-//endpoint transactional annotation-done
-//fix the get all campaign with donations endpoint-done
-//path variable to request param-done
-//proper collection for postman-done
-//implement jwt asap-pending
-//user error handling correctly. - done
 
 @RestController
 @RequestMapping("/api/campaigns")
@@ -36,10 +22,6 @@ public class CampaignController {
     public CampaignController(CampaignService campaignServices) {
         this.campaignServices = campaignServices;
     }
-
-
-
-
 
 
     @GetMapping("/get-all")
@@ -101,8 +83,7 @@ public class CampaignController {
     public ResponseEntity<?> getHomePageCampaigns() {
         try {
             // Fetch homepage campaigns
-            List<CampaignWithDonationsDTO> homepageCampaigns = campaignServices.getHomePageCampaigns();
-
+            List<CampaignWithDonationsDTO> homepageCampaigns = campaignServices.getAllCampaignsWithDonations();
             // Check if the list is empty
             if (homepageCampaigns.isEmpty()) {
                 // Return 204 No Content if there are no campaigns
@@ -118,7 +99,7 @@ public class CampaignController {
 
         } catch (Exception e) {
             // Log the unexpected error
-
+            System.err.println(e.getMessage());
             // Return a generic error message for unexpected errors
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("An unexpected error occurred while fetching campaigns");

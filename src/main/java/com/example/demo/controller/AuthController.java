@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/auth")
 @CrossOrigin(origins = "*")
 public class AuthController {
     private final UserService userServices;
@@ -24,10 +24,6 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody UserSessionDTO user) {
-//        List<String> errors = validateUser(user);
-//        if (!errors.isEmpty()) {
-//            return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
-//        }
         try {
             // Validate input
             if (user == null || user.getEmail() == null || user.getPassword() == null) {
@@ -35,7 +31,7 @@ public class AuthController {
             }
 
             // Check if user exists
-            if (!userServices.UserExists(user.getEmail())) {
+            if (!userServices.UserEmailExists(user.getEmail())) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
             }
 
@@ -65,13 +61,12 @@ public class AuthController {
                 return ResponseEntity.badRequest().body("Email, username, and password are required");
             }
 
-            if (user.getRoles() == null || user.getRoles().isEmpty()) {
-                return ResponseEntity.badRequest().body("At least one role must be specified");
-            }
-
             // Check if user already exists
-            if (userServices.UserExists(user.getEmail())) {
+            if (userServices.UserEmailExists(user.getEmail())) {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body("A user with this email already exists");
+            }
+            if (userServices.UserUsernameExists(user.getUsername())) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("A user with this username already exists");
             }
 
             // Attempt registration
@@ -86,9 +81,6 @@ public class AuthController {
     private List<String> validateUser(UserSessionDTO userDto) {
         List<String> errors = new ArrayList<>();
 
-//        if (userDto.getUserId() != null && userDto.getUserId() <= 0) {
-//            errors.add("User ID must be a positive number");
-//        }
         if (userDto.getEmail() == null || userDto.getEmail().trim().isEmpty()) {
             errors.add("Email is required");
         } else if (!isValidEmail(userDto.getEmail())) {
@@ -105,13 +97,11 @@ public class AuthController {
         } else if (userDto.getPassword().length() < 8) {
             errors.add("Password must be at least 8 characters long");
         }
-        if (userDto.getRoles() == null || userDto.getRoles().isEmpty()) {
-            errors.add("At least one role is required");
-        }
         // errorMessage and token can be null or empty, so we don't validate them
 
         return errors;
     }
+
     // Helper method to validate email format
     private boolean isValidEmail(String email) {
         String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
