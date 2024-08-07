@@ -46,51 +46,9 @@ public class DonationService {
                 dto.setEmail((String) donationData[2]);
                 dto.setCampaign_id((Long) donationData[6]);
                 dto.setFullname((String) donationData[1]);
+                dto.setModeOfPayment((PaymentMode) donationData[7]);
                 donationList.add(dto);
             }
-//            for (Object[] donationData : donations) {
-//                // Print out the values for debugging
-//                for (Object value : donationData) {
-//                    System.out.print(value + "====");
-//                }
-//                System.out.println();
-//
-//                // Create a new DTO instance
-//                DonationSessionDTO dto = new DonationSessionDTO();
-//
-//                // Map fields from the Object[] to the DTO
-//                try {
-//                    dto.setId((Long) donationData[0]); // ID
-//                    dto.setFullname((String) donationData[1]); // Full Name
-//                    dto.setEmail((String) donationData[2]); // Email
-//                    dto.setAlias_name((String) donationData[3]); // Alias Name (can be null)
-//                    dto.setAmount((Double) donationData[4]); // Amount
-//                    dto.setUser_id((Long) donationData[5]); // User ID
-//                    dto.setCampaign_id((Long) donationData[6]); // Campaign ID
-//
-//                    // Handle the PaymentMode enum
-//                    String modeOfPaymentStr = (String) donationData[7];
-//                    PaymentMode modeOfPayment;
-//                    try {
-//                        modeOfPayment = PaymentMode.valueOf(modeOfPaymentStr);
-//                    } catch (IllegalArgumentException e) {
-//                        System.err.println("Invalid PaymentMode value: " + modeOfPaymentStr);
-//                        modeOfPayment = null; // or handle accordingly
-//                    }
-//                    dto.setModeOfPayment(modeOfPayment);
-//
-//                    // Handle LocalDate conversion
-//                    LocalDate donationDate = (LocalDate) donationData[8];
-//                    dto.setDonation_date(donationDate);
-//
-//                } catch (ClassCastException e) {
-//                    System.err.println("Error casting data: " + e.getMessage());
-//                }
-//
-//                // Add the DTO to the list
-//                donationList.add(dto);
-//            }
-
             return Optional.of(donationList);
         } catch (Exception e) {
             System.err.println("Exception while fetching donations: " + e.getMessage());
