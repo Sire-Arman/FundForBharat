@@ -1,5 +1,0 @@
-# Created at 2024-08-03T15:28:05.308
-Boot Manifest-JAR contains absolute paths in classpath 'D:\Aman\GolokaIt\fund-for-Bharat-app\feature1.0\FundforBharat-Server\target\test-classes'
-Hint: <argLine>-Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
-'other' has different root
-

@@ -18,4 +18,18 @@
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
   </DataSourceFromHistory>
+  <DataSourceFromHistory isRemovedFromProject="false">
+    <data-source source="LOCAL" name="PostgreSQL (CloudSQL Proxy)" uuid="63563750-d21a-45d3-97d1-3a9a7d1525c9">
+      <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" dbms="POSTGRES" />
+      <driver-ref>postgresql.cloud_sql</driver-ref>
+      <synchronize>true</synchronize>
+      <configured-by-url>true</configured-by-url>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>postgresql://neondb_owner:npg_C08ktwMzbPAU@ep-royal-mouse-avvwqnii.c-11.us-east-1.aws.neon.tech/neondb?sslmode=require</jdbc-url>
+      <secret-storage>master_key</secret-storage>
+      <user-name>arman</user-name>
+      <schema-mapping />
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
+  </DataSourceFromHistory>
 </DataSourcesHistory>

@@ -7,6 +7,7 @@ import com.example.demo.model.*;
 import com.example.demo.repository.CampaignRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -181,7 +182,7 @@ public class CampaignService {
      */
     @Transactional
     public List<Campaign> getTopFundedCampaigns(){
-        return campaignRepository.findTop10ByOrderByAmountRaisedDesc();
+        return campaignRepository.findTopByOrderByAmountRaisedDesc(PageRequest.of(0, 10));
     }
 
     /**

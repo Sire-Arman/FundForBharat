@@ -7,6 +7,7 @@ import com.example.demo.DTO.DonationSessionDTO;
 import com.example.demo.model.Campaign;
 import com.example.demo.model.Document;
 import com.example.demo.model.Donation;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -24,8 +25,8 @@ import java.util.Optional;
 public interface CampaignRepository extends JpaRepository<Campaign, Long> {
 
 
-    @Query("SELECT u FROM Campaign u ORDER BY u.amount_raised DESC LIMIT 10")
-    List<Campaign> findTop10ByOrderByAmountRaisedDesc();
+    @Query("SELECT u FROM Campaign u ORDER BY u.amount_raised DESC")
+    List<Campaign> findTopByOrderByAmountRaisedDesc(Pageable pageable);
 
 
     @Query("SELECT u from Campaign u where u.id = :Id")
