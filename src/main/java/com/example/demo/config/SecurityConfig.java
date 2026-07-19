@@ -43,7 +43,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(withDefaults())
                 .authorizeHttpRequests(req -> req
-                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/auth/**", "/api/ai/**").permitAll()
                         .requestMatchers("/api/**").hasAuthority("USER")
                         .anyRequest().authenticated())
                 .exceptionHandling(handling-> handling.accessDeniedHandler(accessDeniedHandler))

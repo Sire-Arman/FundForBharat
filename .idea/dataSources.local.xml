@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="dataSourceStorageLocal" created-in="IU-262.8665.258">
+    <data-source name="PostgreSQL (CloudSQL Proxy)" uuid="63563750-d21a-45d3-97d1-3a9a7d1525c9">
+      <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" dbms="POSTGRES" />
+      <secret-storage>master_key</secret-storage>
+      <user-name>arman</user-name>
+      <schema-mapping />
+    </data-source>
+  </component>
+</project>
