@@ -11,7 +11,7 @@ This document provides a precise status update of what has been completed, what 
 > The path for RAG knowledge ingestion (`fundforbharat.knowledge.directory`) is hardcoded to a local OneDrive directory (`C:/Users/arman/OneDrive/Desktop/NGO guidelines`) in `application.properties`. For portability across different machines, this path should be updated to a relative directory within the workspace, e.g., `src/main/resources/knowledge/`, and we should place the PDF documents there.
 
 > [!NOTE]
-> The Gemini API key is currently hardcoded in `application.properties`. We recommend loading this key from an environment variable (e.g. `${GEMINI_API_KEY}`) to secure the credential.
+> The application API provider has been updated to Groq using its OpenAI-compatible endpoint. The `src/main/resources/application.properties` file has been added to `.gitignore` and untracked from Git history to allow local key configuration without risking exposures.
 
 ---
 
@@ -29,17 +29,21 @@ This document provides a precise status update of what has been completed, what 
 
 1. **Dependency Infrastructure**:
    - Integrated Spring AI BOM version `1.0.0-M6`.
-   - Added `spring-ai-openai-spring-boot-starter` (configured to use OpenAI-compatible Gemini endpoint).
+   - Added `spring-ai-openai-spring-boot-starter` (configured to use OpenAI-compatible Groq endpoint).
    - Added `spring-ai-pgvector-store-spring-boot-starter` and `spring-ai-pdf-document-reader`.
-2. **AI Chat Core Service**:
+2. **AI Provider Transition**:
+   - Configured Groq (`llama-3.1-70b-versatile`) and Groq embeddings (`nomic-embed-text-v1.5`) via the OpenAI compatibility layer.
+3. **Git History & Local Key Security**:
+   - Added `src/main/resources/application.properties` to `.gitignore` and untracked it from Git to allow local key configuration without risking exposures.
+4. **AI Chat Core Service**:
    - Implemented `AiChatService` with predefined platform system instructions.
    - Integrated `QuestionAnswerAdvisor` using PGVector store for contextual RAG capabilities.
-3. **API Exposure & Security**:
+5. **API Exposure & Security**:
    - Created `AiChatController` with the `POST /api/ai/chat` endpoint.
    - Updated `SecurityConfig` to permit all access to `/api/ai/**` endpoints.
-4. **Knowledge Ingestion Service**:
+6. **Knowledge Ingestion Service**:
    - Implemented `KnowledgeIngestionService` which checks existing vector store tables and automatically processes PDF documents into vector chunks on application startup.
-5. **Business Database Tools**:
+7. **Business Database Tools**:
    - `CampaignTool`: Query top funded campaigns, active home page campaigns, and campaign detail lookups.
    - `DonationTool`: Fetch donations by campaign ID, get user donation histories, and calculate donation totals.
    - `EligibilityTool`: Validate KYC eligibility of a user, detail mandatory documentation list based on campaign category (medical, education, etc.), and enforce approval rules on campaign limits.
@@ -52,9 +56,7 @@ This document provides a precise status update of what has been completed, what 
    - Update `UserDocumentRepository.java` to match user documents using the correct column name `user_id` instead of `id`.
 2. **Knowledge Ingestion Path Portability**:
    - Relocate the target PDF directory to a relative project directory and update `application.properties`.
-3. **Environment Security**:
-   - Configure Spring Boot to bind `spring.ai.openai.api-key` via environment variables instead of hardcoded strings.
-4. **Tool Serialization Improvement**:
+3. **Tool Serialization Improvement**:
    - Refactor `DonationTool.java` and relevant queries to return custom DTOs or key-value structures rather than raw `Object[]`.
 
 ---
@@ -68,8 +70,11 @@ This document provides a precise status update of what has been completed, what 
 
 ### Configuration Layer
 
+#### [MODIFY] [.gitignore](file:///d:/GolokaIT/FFB/FundforBharat-Server/.gitignore)
+- Ignore `src/main/resources/application.properties` from tracking.
+
 #### [MODIFY] [application.properties](file:///d:/GolokaIT/FFB/FundforBharat-Server/src/main/resources/application.properties)
-- Bind API key dynamically: `spring.ai.openai.api-key=${llm.api.key:AIzaSyCpWBv6mT8Pb-KKHg61RZvvkSG27n8VzA0}` (with fallback if needed).
+- Configure Groq endpoints and models: `base-url=https://api.groq.com/openai/v1`, model=`llama-3.1-70b-versatile`, embedding model=`nomic-embed-text-v1.5`.
 - Define portable knowledge directory: `fundforbharat.knowledge.directory=src/main/resources/knowledge`
 
 ---
